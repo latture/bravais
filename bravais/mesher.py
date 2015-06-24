@@ -1,6 +1,6 @@
 __author__ = 'Ryan'
 
-__all__ = ["Job", "BravaisJob", "mesh_bravais", "mesh_rhombohedral"]
+__all__ = ["Job", "BravaisJob", "mesh_bravais", "mesh_rhombohedral", "prune_job"]
 
 from cpp_utils import *
 from python_utils import sort_rows
@@ -214,3 +214,64 @@ def mesh_rhombohedral(lattice, dimX, dimY, dimZ):
 
     # form output, store information about dimensions and volume in object
     return BravaisJob(node_list, elem_list, dimX, dimY, dimZ, lattice.volume * dimX * dimY * dimZ)
+
+
+def prune_job(job, a=1.0):
+    """
+    Deletes any nodes or elements from `job` that are outside `a * job.dimX` x `a * job.dimY` x `a * job.dimZ`
+    as well as any unused nodes that are left over inside the bounds but are not referenced by an element.
+    :param job: `BravaisJob`. Job to prune.
+    :param a: `Float`. Lattice parameter of `job`.
+    :return: `BravaisJob`. Pruned Job.
+    """
+    rows, cols = job.nodes.shape
+
+    # calculate the min and max values along each principle direction
+    min_vals = np.empty(cols)
+    max_vals = np.empty(cols)
+    for i in range(cols):
+        min_vals[i] = (job.nodes[:, i].min())
+        max_vals[i] = (job.nodes[:, i].max())
+
+    # This assumes the nodes are in 3D
+    magnitude_limits = np.empty(3)
+    magnitude_limits[0] = a * job.dimX
+    magnitude_limits[1] = a * job.dimY
+    magnitude_limits[2] = a * job.dimZ
+
+    # calculate the offset from each side of the nodes
+    # that will define the boundaries
+    offsets = ((max_vals - min_vals) - magnitude_limits) / 2
+
+    # get the boundaries
+    limits = np.array([min_vals + offsets, max_vals - offsets])
+
+    # find any nodes that are out of bounds
+    out_of_bounds_nodes = np.array([], dtype=np.int_)
+    for i in range(cols):
+        oob = np.where((job.nodes[:, i] < limits[0, i]) | (job.nodes[:, i] > limits[1, i]))[0]
+        out_of_bounds_nodes = np.concatenate((out_of_bounds_nodes, oob))
+
+    # find any elements that reference out of bounds nodes
+    out_of_bounds_elems = np.array([], dtype=np.int_)
+    for n in out_of_bounds_nodes:
+        oob = np.where(job.elems == n)[0]
+        out_of_bounds_elems = np.concatenate((out_of_bounds_elems, oob))
+
+    # replace the element indices with their nodal positions
+    elem_positions = job.nodes[job.elems]
+
+    # delete extra nodes and elements
+    job.nodes = np.delete(job.nodes, out_of_bounds_nodes, axis=0)
+    elem_positions = np.delete(elem_positions, out_of_bounds_elems, axis=0)
+
+    # update elements based on deletions
+    job.elems = np.asarray(replace_with_idx(job.nodes, elem_positions))
+
+    # clean up unreferenced nodes that are within bounds
+    extra_node_indices = np.setxor1d(np.arange(0, job.nodes.shape[0]), np.unique(job.elems), assume_unique=True)
+    job.nodes = np.delete(job.nodes, extra_node_indices, axis=0)
+    job.elems = np.asarray(replace_with_idx(job.nodes, elem_positions))
+
+    return job
+
