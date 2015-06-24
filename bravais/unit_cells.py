@@ -3,7 +3,7 @@ __author__ = 'Ryan'
 __all__ = ["SimpleCubic", "FCC", "BCC", "Hexagonal", "Rhombohedral", "PrimitiveTetragonal", "BodyCenteredTetragonal",
            "PrimitiveOrthorhombic", "BodyCenteredOrthorhombic", "BaseCenteredOrthorhombic", "FaceCenteredOrthorhombic",
            "PrimitiveMonoclinic", "BaseCenteredMonoclinic", "Triclinic", "Hexagonal_v2", "FC_Pts",
-           "Square", "Cross", "FCC_Primitive"]
+           "Square", "Cross", "FCC_Primitive", "DiamondCubic"]
 
 
 from cpp_utils import *
@@ -297,13 +297,13 @@ class BCC(BravaisLattice):
         BravaisLattice.__init__(self, a=a, b=a, c=a, num_elems=num_elems)
 
         if inverted:
-            self.basisNodes = np.array([[0.0, 0.5, 0.0],
+            self.basis_nodes = np.array([[0.0, 0.5, 0.0],
                                         [0.0, 0.5, 1.0],
                                         [0.5, 0.0, 0.5],
                                         [0.5, 1.0, 0.5],
                                         [1.0, 0.5, 0.0],
                                         [1.0, 0.5, 1.0]])
-            self.basisElems = np.array(
+            self.basis_elems = np.array(
                 [[0, 2], [0, 3], [1, 2], [1, 3], [2, 4], [2, 5], [3, 4], [3, 5]])
         else:
             self.basis_nodes = np.array([[0.0, 0.0, 0.0],
@@ -318,6 +318,105 @@ class BCC(BravaisLattice):
             self.basis_elems = np.array(
                 [[0, 4], [1, 4], [2, 4], [3, 4],
                  [4, 5], [4, 6], [4, 7], [4, 8]])
+
+        self.nodes = np.empty((self.basis_elems.shape[0], num_elems + 1, 3))
+        self.elems = np.empty((self.basis_elems.shape[0], num_elems, 2, 3))
+        self.create_basis_mesh()
+
+
+class DiamondCubic(BravaisLattice):
+    def __init__(self, a, num_elems=1):
+        BravaisLattice.__init__(self, a=a, b=a, c=a, num_elems=num_elems)
+        self.basis_nodes = np.array([
+                                    [-0.25,  -0.25,  0.25],
+                                    [-0.25,  -0.25,  1.25],
+                                    [-0.25,  0.25,  -0.25],
+                                    [-0.25,  0.25,  0.75],
+                                    [-0.25,  0.75,  0.25],
+                                    [-0.25,  0.75,  1.25],
+                                    [-0.25,  1.25,  -0.25],
+                                    [-0.25,  1.25,  0.75],
+
+                                    [0.0,  0.0,  0.0],
+                                    [0.0,  0.0,  1.0],
+                                    [0.0,  0.5,  0.5],
+                                    [0.0,  1.0,  0.0],
+                                    [0.0,  1.0,  1.0],
+
+                                    [0.25,  -0.25,  -0.25],
+                                    [0.25,  -0.25,  0.75],
+                                    [0.25,  0.25,  0.25],
+                                    [0.25,  0.25,  1.25],
+                                    [0.25,  0.75,  -0.25],
+                                    [0.25,  0.75,  0.75],
+                                    [0.25,  1.25,  0.25],
+                                    [0.25,  1.25,  1.25],
+
+                                    [0.5,  0.0,  0.5],
+                                    [0.5,  0.5,  0.0],
+                                    [0.5,  0.5,  1.0],
+                                    [0.5,  1.0,  0.5],
+
+                                    [0.75,  -0.25,  0.25],
+                                    [0.75,  -0.25,  1.25],
+                                    [0.75,  0.25,  -0.25],
+                                    [0.75,  0.25,  0.75],
+                                    [0.75,  0.75,  0.25],
+                                    [0.75,  0.75,  1.25],
+                                    [0.75,  1.25,  -0.25],
+                                    [0.75,  1.25,  0.75],
+
+                                    [1.0,  0.0,  0.0],
+                                    [1.0,  0.0,  1.0],
+                                    [1.0,  0.5,  0.5],
+                                    [1.0,  1.0,  0.0],
+                                    [1.0,  1.0,  1.0],
+
+                                    [1.25,  -0.25,  -0.25],
+                                    [1.25,  -0.25,  0.75],
+                                    [1.25,  0.25,  0.25],
+                                    [1.25,  0.25,  1.25],
+                                    [1.25,  0.75,  -0.25],
+                                    [1.25,  0.75,  0.75],
+                                    [1.25,  1.25,  0.25],
+                                    [1.25,  1.25,  1.25]])
+
+        self.basis_elems = np.array([[0, 8],
+                                    [1, 9],
+                                    [2, 8],
+                                    [3, 9], [3, 10],
+                                    [4, 10], [4, 11],
+                                    [5, 12],
+                                    [6, 11],
+                                    [7, 12],
+                                    [8, 13], [8, 15],
+                                    [9, 14], [9, 16],
+                                    [10, 15], [10, 18],
+                                    [11, 17], [11, 19],
+                                    [12, 18], [12, 20],
+                                    [14, 21],
+                                    [15, 21], [15, 22],
+                                    [16, 23],
+                                    [17, 22],
+                                    [18, 23], [18, 24],
+                                    [19, 24],
+                                    [21, 25], [21, 28],
+                                    [22, 27], [22, 29],
+                                    [23, 28], [23, 30],
+                                    [24, 29], [24, 32],
+                                    [25, 33],
+                                    [26, 34],
+                                    [27, 33],
+                                    [28, 34], [28, 35],
+                                    [29, 35], [29, 36],
+                                    [30, 37],
+                                    [31, 36],
+                                    [32, 37],
+                                    [33, 38], [33, 40],
+                                    [34, 39], [34, 41],
+                                    [35, 40], [35, 43],
+                                    [36, 42], [36, 44],
+                                    [37, 43], [37, 45]])
 
         self.nodes = np.empty((self.basis_elems.shape[0], num_elems + 1, 3))
         self.elems = np.empty((self.basis_elems.shape[0], num_elems, 2, 3))
