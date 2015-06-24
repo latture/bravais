@@ -63,7 +63,7 @@ def create_inp(file_name, jobs, radii, load_type, strain, tile_pts='SC',
     if len(jobs) == 1:
         elsets = (range(job.elems.shape[0]),)
         major_axes.append(assign_major_axes(job))
-        unique_major_axes.append(np.asarray(delete_duplicates_dbl(major_axes)))
+        unique_major_axes.append(np.asarray(delete_duplicates_dbl(major_axes[0])))
     else:
         for j in jobs[1:]:
             elsets = job.merge(j, return_elem_indices=True)
