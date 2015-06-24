@@ -1,9 +1,9 @@
 __author__ = 'ryan'
 
-__all__ = ["sort_rows", "calc_rel_density"]
+__all__ = ["sort_rows", "calc_rel_density", "print_nodes"]
 
 import numpy as np
-
+from cpp_utils import replace_with_idx
 
 def sort_rows(a):
     """
@@ -31,3 +31,26 @@ def calc_rel_density(total_volume, jobs, areas):
         vol += jobs[i].calc_volume(areas[i])
 
     return vol / total_volume
+
+
+def print_nodes(job1, job2, save_file=False, filename="nodes.csv"):
+    """
+    Prints the indices where the nodes from `job2` occur in `job1`.
+    :param job1 : `Job`. The Job in which to search for the nodes.
+    :param job2 : `Job`. The Job that contains the nodes to search for.
+    :param save_file : `Bool`. If `True` a file designated by `filename` is saved which contains the indices where
+                       the nodes of `job2` occur in `job1.nodes`.
+    :param filename : `String`. Name of file to save if `save_file` is `True`.
+    :return: Numpy array, dtype=`int`. Indices.
+    """
+    nodes = np.sort(np.asarray(replace_with_idx(job1.nodes, np.array([job2.nodes]))).ravel())
+    if save_file:
+        np.savetxt(filename, nodes, fmt='%d', delimiter=',', newline=',')
+    n_str = "["
+    for i, n in enumerate(nodes):
+        n_str += "%s" % str(n)
+        if i != nodes.shape[0] - 1:
+            n_str += ", "
+    n_str += "]"
+    print n_str
+    return nodes
