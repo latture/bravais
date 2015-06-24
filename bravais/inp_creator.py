@@ -191,17 +191,15 @@ def create_inp(file_name, jobs, radii, load_type, strain, tile_pts='SC',
     elif load_type.lower() == 'bulk':
         loadpoint_keys = ['xmax', 'xmin', 'ymax', 'ymin', 'zmax', 'zmin']
     else:
-        raise Exception("Load type: %s is not a valid load type. Please choose from `axial`, `shear`, or `bulk`.")
-
-    loadpoint_values = get_load_points(job.nodes, job.dimX, job.dimY, job.dimZ, 
-                                       tile_pts=tile_pts, load_type=load_type)
+        raise Exception("Load type: %s is not a valid load type. Please choose from `axial`, `shear`, or `bulk`."
+                        % load_type)
     
-    for i in range(len(loadpoint_keys)):
-        loadpoints[loadpoint_keys[i] + "_loadpoints"] = loadpoint_values[i] + 1
+    for key in loadpoint_keys:
+        loadpoints[key + "_loadpoints"] = minmax_nodes[key]
     
     write_dict_to_nset(f, loadpoints, instance_name, break_signifier=break_signifier)
 
-   # find center symmetry planes
+    # find center symmetry planes
     centerplanes = {}
     centerplane_keys = ['yz_center_plane', 'xy_center_plane']
     centerplane_values = get_center_planes(job.nodes)
