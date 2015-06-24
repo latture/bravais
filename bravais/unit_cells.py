@@ -166,7 +166,7 @@ class Cross(BravaisLattice):
                                     [1.0, 0.5, 0.5],
                                     [0.5, 1.0, 0.5],
                                     [0.5, 0.5, 1.0]])
-        self.basis_nodes[:,]
+
         self.basis_elems = np.array([[0, 3],
                                     [1, 3],
                                     [2, 3],
