@@ -1,10 +1,9 @@
 import numpy as np
 from math import cos, sin, sqrt, acos
-from numba import jit, float64
 
 __all__ = ["assign_major_axes"]
 
-@jit
+
 def get_yz_rotation(vec):
     """
     Returns the rotations around the z and y axes required such that the local x-axis is aligned along the vector's
@@ -40,7 +39,7 @@ def get_yz_rotation(vec):
     # put results in numpy array
     return yrot, zrot
 
-@jit(float64(float64, float64, float64))
+
 def rotate_coords(xRot, yRot, zRot):
     """
     Returns the local x, y, and z coordinate vectors that result from rotating the global x,y, and z vectors by the
