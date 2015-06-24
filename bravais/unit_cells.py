@@ -297,14 +297,14 @@ class BCC(BravaisLattice):
         BravaisLattice.__init__(self, a=a, b=a, c=a, num_elems=num_elems)
 
         if inverted:
-            self.basis_nodes = np.array([[0.0, 0.5, 0.0],
+            self.basisNodes = np.array([[0.0, 0.5, 0.0],
                                         [0.0, 0.5, 1.0],
                                         [0.5, 0.0, 0.5],
                                         [0.5, 1.0, 0.5],
                                         [1.0, 0.5, 0.0],
                                         [1.0, 0.5, 1.0]])
-            self.basis_elems = np.array(
-                [[0, 1], [0, 2], [0, 3], [0, 4], [1, 2], [1, 3], [1, 5], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]])
+            self.basisElems = np.array(
+                [[0, 2], [0, 3], [1, 2], [1, 3], [2, 4], [2, 5], [3, 4], [3, 5]])
         else:
             self.basis_nodes = np.array([[0.0, 0.0, 0.0],
                                         [0.0, 0.0, 1.0],
