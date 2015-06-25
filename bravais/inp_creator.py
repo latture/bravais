@@ -223,8 +223,9 @@ def create_inp(file_name, jobs, radii, load_type, strain, tile_pts='SC',
     f.write("*BOUNDARY\n")
 
     # Apply symmetric boundary conditions at center planes
-    f.write("%s, 1\n" % centerplane_keys[0])
-    f.write("%s, 3\n" % centerplane_keys[1])
+    if load_type.lower() != 'shear':
+        f.write("%s, 1\n" % centerplane_keys[0])
+        f.write("%s, 3\n" % centerplane_keys[1])
 
     # apply displacement
     for key in loadpoints.keys():
