@@ -119,55 +119,60 @@ def categorize_files(filenames, keys):
     return tuple(data)
 
 
-def calc_avg_disp(indices, displacements):
+def calc_total_value(indices, values):
     """
-    Calculates the average displacement vector for the entries in `displacements` referenced by the variable `indices`.
-    :param indices : `Array`, dtype=`int`. Array containing the indices of the entries in displacements to average over.
-    :param displacements : `Array`, dtype=`float`. Nodal displacements. If data is from 3D analysis,
-                           Each row contains the x, y, and z components of displacement, respectively.
-    :return: Average displacement vector. `Array`, dtype=`float`.
+    Totals the rows in in `values` referenced by the variable `indices`.
+    :param indices : `Array`, dtype=`int`. Array containing the indices of the rows to sum.
+    :param values : `Array`, dtype=`float`. Nodal values. If data is from 3D analysis,
+                           Each row contains the x, y, and z components, respectively.
+    :return: Total values summed by column over the specified rows. `Array`, dtype=`float`.
     """
     # initialize variables to hold displacement in x, y, and z directions
-    disp = np.zeros(len(displacements[0]))
+    cols = len(values[0])
+    total_vals = np.zeros(cols)
 
     # loop through indices and sum displacement in each direction
     for i in indices:
-        disp += displacements[i]
-
-    # divide by number of displacement points sampled
-    disp /= indices.shape[0]
+        total_vals += values[i]
 
     # return average values
-    return disp
+    return total_vals
 
 
-def calc_delta_disp(max_nodes, min_nodes, displacements):
+def calc_total_force(nodes, index, forces, data_direction):
     """
-    Returns the difference between displacement vectors
-    defined by the nodal sets defined by `max_nodes` and `min_nodes`.
-    :param max_nodes: `Array`, dtype=`int`. Nodal indices of the maximum face of the mesh.
-    :param min_nodes: `Array`, dtype=`int`. Nodal indices of the minimum face of the mesh.
-    :param displacements: `Array`, dtype=`float`. Nodal displacements. Shape should be (# of nodes, dimensionality),
-                          where dimensionality is 3 if the mesh if defined in 3 dimensions.
-    """
-    max_disp = calc_avg_disp(max_nodes, displacements)
-    min_disp = calc_avg_disp(min_nodes, displacements)
-
-    return max_disp - min_disp
-
-
-def calc_average_value(nodes, index, data, data_direction):
-    """
-    Calculates the average value of the data on the min and max faces of `nodes`.
+    Calculates the total force on the external face specified by `index` in the direction specified by `data_direction`.
+    Forces are calculated for the minimum and maximum faces to check the values are the same, i.e. the job is in
+    equilibrium, but only the force data for one face is returned.
     :param nodes: 2D Numpy array, dtype=`float`. List of nodal coordinates.
     :param index: `Int`. Index of the direction to search for the min and max nodes.
-    :param data: 1D Numpy array, dtype=`float`. Data to average.
-    :param data_direction: `Int`. Index of the averaged data over the faces to return.
-    :return: `Float`. Average data value.
+    :param forces: 1D Numpy array, dtype=`float`. Force data to total.
+    :param data_direction: `Int`. Index of the direction for the total force to return.
+    :return: 'Float'. Total force.
     """
     max_nodes, min_nodes = get_face_nodes(nodes, index)
-    data_avg = calc_delta_disp(max_nodes, min_nodes, data)
-    return data_avg[data_direction]
+    max_force = calc_total_value(max_nodes, forces)
+    min_force = calc_total_value(min_nodes, forces)
+
+    assert np.allclose(np.abs(max_force), np.abs(min_force), atol=1e-7), "Forces on max and min faces are not equal."
+
+    return max_force[data_direction]
+
+
+def calc_average_displacements(nodes, index, displacements, data_direction):
+    """
+    Calculates the average displacements of the displacements on the min and max faces of `nodes`.
+    :param nodes: 2D Numpy array, dtype=`float`. List of nodal coordinates.
+    :param index: `Int`. Index of the direction to search for the min and max nodes.
+    :param displacements: 1D Numpy array, dtype=`float`. Dispalcement data to average.
+    :param data_direction: `Int`. Index of the direction for averaged displacements over the faces to return.
+    :return: `Float`. Average displacement.
+    """
+    max_nodes, min_nodes = get_face_nodes(nodes, index)
+    max_disp = calc_total_value(max_nodes, displacements) / max_nodes.shape[0]
+    min_disp = calc_total_value(min_nodes, displacements) / min_nodes.shape[0]
+    delta_disp = max_disp - min_disp
+    return delta_disp[data_direction]
 
 
 def process_data(job, files, path_to_files):
@@ -194,7 +199,7 @@ def process_data(job, files, path_to_files):
     force_data = NodalData(force_files, path_to_files)
 
     # find the lengths along each direction of the job's nodes
-    dimensionality = displacement_data.axial[0].shape[1]
+    dimensionality = len(displacement_data.axial[0])
     lengths = np.empty(dimensionality)
     for i in range(dimensionality):
         max_val = job.nodes[:, i].max()
@@ -211,35 +216,33 @@ def process_data(job, files, path_to_files):
     strains_shear = np.empty(2)
 
     for i in range(strains_axial.shape[0]):
-        strains_axial[i] = calc_average_value(job.nodes, i, displacement_data.axial, i) / lengths[i]
+        strains_axial[i] = calc_average_displacements(job.nodes, i, displacement_data.axial, i) / lengths[i]
 
     if displacement_data.bulk is not None:
         for i in range(strains_bulk.shape[0]):
-            strains_bulk[i] = calc_average_value(job.nodes, i, displacement_data.bulk, i) / lengths[i]
+            strains_bulk[i] = calc_average_displacements(job.nodes, i, displacement_data.bulk, i) / lengths[i]
 
     if displacement_data.shear is not None:
-        strains_shear[0] = calc_average_value(job.nodes, 0, displacement_data.shear, 1) / lengths[0]
-        strains_shear[1] = calc_average_value(job.nodes, 1, displacement_data.shear, 0) / lengths[1]
+        strains_shear[0] = calc_average_displacements(job.nodes, 0, displacement_data.shear, 1) / lengths[0]
+        strains_shear[1] = calc_average_displacements(job.nodes, 1, displacement_data.shear, 0) / lengths[1]
 
     # initialize arrays to hold stresses
     stresses_axial = np.empty_like(strains_axial)
     stresses_bulk = np.empty_like(strains_bulk)
     stresses_shear = np.empty_like(strains_shear)
 
-    for d in range(dimensionality):
-        stresses_axial[i] = calc_average_value(job.nodes, i, force_data.axial, i) / \
+    for i in range(dimensionality):
+        stresses_axial[i] = calc_total_force(job.nodes, i, force_data.axial, i) / \
             (lengths[(i + 1) % dimensionality] * lengths[(i + 2) % dimensionality])
-        stresses_axial /= 2.0
 
     if force_data.bulk is not None:
-        for d in range(dimensionality):
-            stresses_bulk[i] = calc_average_value(job.nodes, i, force_data.bulk, i) / \
+        for i in range(dimensionality):
+            stresses_bulk[i] = calc_total_force(job.nodes, i, force_data.bulk, i) / \
                 (lengths[(i + 1) % dimensionality] * lengths[(i + 2) % dimensionality])
-            stresses_bulk /= 2.0
 
     if force_data.shear is not None:
-        stresses_shear[0] = calc_average_value(job.nodes, 0, force_data.bulk, 1) / (lengths[1] * lengths[2])
-        stresses_shear[1] = calc_average_value(job.nodes, 1, force_data.bulk, 0) / (lengths[0] * lengths[2])
+        stresses_shear[0] = calc_total_force(job.nodes, 0, force_data.shear, 1) / (lengths[1] * lengths[2])
+        stresses_shear[1] = calc_total_force(job.nodes, 1, force_data.shear, 0) / (lengths[0] * lengths[2])
 
     # based on stresses and strains calculate the elastic properties
     youngs_modulus = stresses_axial[0] / strains_axial[0]
