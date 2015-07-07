@@ -3,7 +3,7 @@ __author__ = 'Ryan'
 __all__ = ["SimpleCubic", "FCC", "BCC", "Hexagonal", "Rhombohedral", "PrimitiveTetragonal", "BodyCenteredTetragonal",
            "PrimitiveOrthorhombic", "BodyCenteredOrthorhombic", "BaseCenteredOrthorhombic", "FaceCenteredOrthorhombic",
            "PrimitiveMonoclinic", "BaseCenteredMonoclinic", "Triclinic", "Hexagonal_v2", "FC_Pts",
-           "Square", "Cross", "FCC_Primitive", "DiamondCubic"]
+           "Square", "Cross", "FCC_Primitive", "DiamondCubic", "Kagome"]
 
 
 from cpp_utils import *
@@ -475,15 +475,63 @@ class Rhombohedral(BravaisLattice):
     def __init__(self, a, alpha, num_elems=1):
         BravaisLattice.__init__(self, a=a, b=a, c=a, alpha=alpha, beta=alpha, gamma=alpha, num_elems=num_elems)
         self.basis_nodes = np.array([[0.0, 0.0, 0.0],
-                                    [0.0, 0.0, 1.0],
-                                    [0.0, 1.0, 0.0],
-                                    [1.0, 0.0, 0.0],
-                                    [0.0, 1.0, 1.0],
-                                    [1.0, 0.0, 1.0],
-                                    [1.0, 1.0, 0.0],
-                                    [1.0, 1.0, 1.0]])
+                                     [0.0, 0.0, 1.0],
+                                     [0.0, 1.0, 0.0],
+                                     [1.0, 0.0, 0.0],
+                                     [0.0, 1.0, 1.0],
+                                     [1.0, 0.0, 1.0],
+                                     [1.0, 1.0, 0.0],
+                                     [1.0, 1.0, 1.0]])
         self.basis_elems = np.array(
             [[0, 1], [0, 2], [0, 3], [1, 4], [1, 5], [2, 4], [2, 6], [3, 5], [3, 6], [4, 7], [5, 7], [6, 7]])
+        self.nodes = np.empty((self.basis_elems.shape[0], num_elems + 1, 3))
+        self.elems = np.empty((self.basis_elems.shape[0], num_elems, 2, 3))
+        self.create_basis_mesh()
+
+
+class Kagome(BravaisLattice):
+    def __init__(self, a, alpha, num_elems=1):
+        BravaisLattice.__init__(self, a=a, b=a, c=a, alpha=alpha, beta=alpha, gamma=alpha, num_elems=num_elems)
+        self.basis_nodes = np.array([[0.0, 0.0, 0.0],
+                                     [0.0, 0.0, 0.5],
+                                     [0.0, 0.0, 1.0],
+                                     [0.0, 0.5, 0.0],
+                                     [0.0, 0.5, 1.0],
+                                     [0.0, 1.0, 0.0],
+                                     [0.0, 1.0, 0.5],
+                                     [0.0, 1.0, 1.0],
+                                     [0.5, 0.0, 0.0],
+                                     [0.5, 0.0, 1.0],
+                                     [0.5, 1.0, 0.0],
+                                     [0.5, 1.0, 1.0],
+                                     [1.0, 0.0, 0.0],
+                                     [1.0, 0.0, 0.5],
+                                     [1.0, 0.0, 1.0],
+                                     [1.0, 0.5, 0.0],
+                                     [1.0, 0.5, 1.0],
+                                     [1.0, 1.0, 0.0],
+                                     [1.0, 1.0, 0.5],
+                                     [1.0, 1.0, 1.0]])
+        self.basis_elems = np.array(
+            [[0, 1], [0, 3], [0, 8], 
+             [1, 2], [1, 3], [1, 8], 
+             [2, 4], [2, 9], 
+             [3, 5], [3, 8], 
+             [4, 6], [4, 7], [4, 9],
+             [5, 6], [5, 10],
+             [6, 7], [6, 10],
+             [7, 11],
+             [8, 12],
+             [9, 13], [9, 14],
+             [10, 15], [10, 17],
+             [11, 16], [11, 18], [11, 19],
+             [12, 13], [12, 15],
+             [13, 14], [13, 15], 
+             [14, 16],
+             [15, 17],
+             [16, 18], [16, 19],
+             [17, 18],
+             [18, 19]])
         self.nodes = np.empty((self.basis_elems.shape[0], num_elems + 1, 3))
         self.elems = np.empty((self.basis_elems.shape[0], num_elems, 2, 3))
         self.create_basis_mesh()
