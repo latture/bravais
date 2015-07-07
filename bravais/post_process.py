@@ -1,11 +1,12 @@
 __author__ = 'ryan'
 
-__all__ = ["categorize_files", "NodalData", "process_data"]
+__all__ = ["categorize_files", "NodalData", "process_data", "plot_data", "plot_bravais", "plot_indices"]
 
 import numpy as np
 from bcs import get_face_nodes
 import matplotlib.pyplot as plt
 import itertools
+from mesher import mesh_bravais
 
 
 COLORS = {
@@ -260,3 +261,58 @@ def process_data(job, files, path_to_files):
         bulk_modulus = avg_bulk_stress / dilation
 
     return youngs_modulus, poisson_ratio, shear_modulus, bulk_modulus
+
+
+def plot_bravais(unit_cell, dimX=1, dimY=1, dimZ=1, color='#000000', showfig=True, savefig=False, filename="test.svg"):
+    """
+    Plots the specified unit cell the given dimensions in x, y and z.
+
+    :param unit_cell: BravaisLattice. Contains `nodes` and `elems` member variables to plot.
+    :param dimX: `Int`. Number of times to repeat the unit cell in the x dimension.
+    :param dimY: `Int`. Number of times to repeat the unit cell in the y dimension.
+    :param dimZ: `Int`. Number of times to repeat the unit cell in the z dimension.
+    :param color: `Tuple` or `String`, Default=`'#000000'`. Valid color to plot the lattice.
+                   Can be hex values, (r, g, b, a) tuples, or any valid format for matplotlib color specifications.
+    :param showfig: Bool, Default=`True`. Whether to show the figure after creation.
+    :param savefig: Bool, Default=`False`. Whether to save the figure after creation.
+    :param filename: `String`. Name to save the figure under if `savefig` is `True`.
+    """
+    if dimX == dimY == dimZ == 1:
+        job = unit_cell
+    else:
+        job = mesh_bravais(unit_cell, dimX, dimY, dimZ)
+
+    # create a figure and add an axis
+    fig = plt.figure(figsize=(10, 10))
+    axis = fig.add_subplot(111, projection='3d', aspect='equal')
+    axis.view_init(elev=10, azim=25)
+
+    for i in range(len(job.elems)):
+        pt1 = job.nodes[job.elems[i, 0]]
+        pt2 = job.nodes[job.elems[i, 1]]
+        xpts = [pt1[0], pt2[0]]
+        ypts = [pt1[1], pt2[1]]
+        zpts = [pt1[2], pt2[2]]
+        axis.plot(xpts, ypts, zpts, marker='o', linewidth=9, markersize=12, color=color)
+
+    plt.axis('off')
+    if savefig:
+        plt.savefig(filename, transparent=True, dpi=150)
+    if showfig:
+        plt.show()
+    plt.close('all')
+
+
+def plot_indices(nodes):
+    """
+    Plots the nodes with the points labels with the index at which each appears in the array.
+    :param nodes: numpy array containing the x, y, z coorinates of each point.
+    """
+    fig = plt.figure(figsize=(4, 6))
+    axis = fig.add_subplot(111, projection='3d', aspect='equal')
+
+    markers = map(str, range(0, nodes.shape[0]))
+    for i in range(nodes.shape[0]):
+        axis.text(nodes[i, 0]+0.01, nodes[i, 1]+0.01, nodes[i, 2]+0.01, markers[i], zdir='x')
+    axis.plot(nodes[:, 0], nodes[:, 1], nodes[:, 2], marker=u'o', linestyle='None')
+    plt.show()
