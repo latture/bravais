@@ -3,13 +3,22 @@ __author__ = 'Ryan'
 __all__ = ["SimpleCubic", "FCC", "BCC", "Hexagonal", "Rhombohedral", "PrimitiveTetragonal", "BodyCenteredTetragonal",
            "PrimitiveOrthorhombic", "BodyCenteredOrthorhombic", "BaseCenteredOrthorhombic", "FaceCenteredOrthorhombic",
            "PrimitiveMonoclinic", "BaseCenteredMonoclinic", "Triclinic", "Hexagonal_v2", "FC_Pts",
-           "Square", "Cross", "FCC_Primitive", "DiamondCubic", "Kagome"]
+           "Square", "Cross", "FCC_Primitive", "DiamondCubic", "Kagome", "UnitData"]
 
 
 from cpp_utils import *
 import numpy as np
 from math import cos, sin, sqrt
 from python_utils import sort_rows
+from collections import namedtuple
+
+
+class UnitData(namedtuple("UnitData", ["unit_cells", "label", "aspect_ratios"])):
+    def __new__(cls, unit_cells, label, aspect_ratios):
+        self = super(UnitData, cls).__new__(cls, unit_cells, label, aspect_ratios)
+        assert len(self.unit_cells) == len(aspect_ratios), \
+            "Length of unit_cells does not match length of aspect_ratios."
+        assert type(label) is str, "label must be a string."
 
 
 '''
