@@ -15,10 +15,10 @@ from collections import namedtuple
 
 class UnitData(namedtuple("UnitData", ["unit_cells", "label", "aspect_ratios"])):
     def __new__(cls, unit_cells, label, aspect_ratios):
-        self = super(UnitData, cls).__new__(cls, unit_cells, label, aspect_ratios)
-        assert len(self.unit_cells) == len(aspect_ratios), \
+        assert len(unit_cells) == len(aspect_ratios), \
             "Length of unit_cells does not match length of aspect_ratios."
         assert type(label) is str, "label must be a string."
+        return super(UnitData, cls).__new__(cls, unit_cells, label, aspect_ratios)
 
 
 '''
