@@ -1,6 +1,6 @@
 __author__ = 'ryan'
 
-__all__ = ["sort_rows", "calc_rel_density", "print_nodes"]
+__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius"]
 
 import numpy as np
 from cpp_utils import replace_with_idx
@@ -54,3 +54,23 @@ def print_nodes(job1, job2, save_file=False, filename="nodes.csv"):
     n_str += "]"
     print n_str
     return nodes
+
+
+def calc_radius(job, num_elems, aspect_ratio):
+    """
+    Calculates the strut radius for the elements in `job` for a given aspect ratio
+    and number of elements along each strut. Assumes all struts in the job are the
+    same length.
+    :param job: Contains `nodes` and `elems` member variables corresponding to the
+    node and element lists for the current mesh.
+    :param num_elems: `Int`. The number of elements along each strut.
+    :param aspect_ratio:  `Float`. Aspect ratio given to each strut.
+    """
+    nn1, nn2 = job.elems[0]
+    n1 = job.nodes[nn1]
+    n2 = job.nodes[nn2]
+
+    # this assumes that all elements have the same length
+    strut_length = num_elems * np.linalg.norm(n2 - n1)
+
+    return strut_length / (2.0 * aspect_ratio)
