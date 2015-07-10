@@ -15,7 +15,7 @@ def get_instance(instName, partName):
     :param instName : The name of the instance to write to the input file.
     :param partName : The name of the part to instance.
     """
-    return ("*INSTANCE", ", NAME=" + instName, ", PART=" + partName, "\n", "*END INSTANCE\n", "**\n")
+    return ('*INSTANCE', ', NAME=' + instName, ', PART=' + partName, '\n', '*END INSTANCE\n', '**\n')
 
 
 def get_nset(nsetName, instName):
@@ -25,14 +25,14 @@ def get_nset(nsetName, instName):
     :param nsetName : The name of the nodal set to write to the input file.
     :param instName : The name of the instance associated with the nodes.
     """
-    return ("*NSET", ", NSET=" + nsetName, ", INSTANCE=" + instName, ", unsorted\n")
+    return ('*NSET', ', NSET=' + nsetName, ', INSTANCE=' + instName, ', unsorted\n')
 
 def write_dict_to_nset(f, dictionary, instance_name, break_signifier='\n'):
     for key, value in dictionary.iteritems():
             for entry in get_nset(key, instance_name):
                 f.write(entry)
             for idx in value:
-                f.write("%d\n" % idx)
+                f.write('%d\n' % idx)
             f.write(break_signifier)
 
 def create_inp(file_name, jobs, radii, load_type, strain,
@@ -52,8 +52,8 @@ def create_inp(file_name, jobs, radii, load_type, strain,
     :param shear_modulus     : `Float`. Shear modulus of the parent material.
     :param poisson_ratio     : `Float`. Poisson ratio of the parent material.
     """
-    assert len(jobs) == len(radii), "Length of input jobs and radii do not match."
-    assert len(jobs) <= 2, "Too many jobs. Job merging currently only works with 2 elementary meshes."
+    assert len(jobs) == len(radii), 'Length of input jobs and radii do not match.'
+    assert len(jobs) <= 2, 'Too many jobs. Job merging currently only works with 2 elementary meshes.'
 
     job = jobs[0]
     elsets = ()
@@ -73,83 +73,83 @@ def create_inp(file_name, jobs, radii, load_type, strain,
             major_axes.append(_major_axes_temp)
             unique_major_axes.append(_unique_major_axes_temp)
 
-    material_data = ["*MATERIAL, NAME=mat", "*ELASTIC", "%f, %f" % (youngs_modulus, poisson_ratio)]
-    assembly_data_header = ["*ASSEMBLY, NAME=assembly"]
-    assembly_data_footer = ["*END ASSEMBLY"]
+    material_data = ['*MATERIAL, NAME=mat', '*ELASTIC', '%f, %f' % (youngs_modulus, poisson_ratio)]
+    assembly_data_header = ['*ASSEMBLY, NAME=assembly']
+    assembly_data_footer = ['*END ASSEMBLY']
 
-    instance_name = "unit_cell-1"
-    part_name = "part"
-    nodes_name = "partNodes"
-    elems_name = "partElems"
-    part_data_header = "*PART, NAME="
-    part_data_footer = "*END PART"
+    instance_name = 'unit_cell-1'
+    part_name = 'part'
+    nodes_name = 'partNodes'
+    elems_name = 'partElems'
+    part_data_header = '*PART, NAME='
+    part_data_footer = '*END PART'
 
-    break_signifier = "********************************************************\n"
+    break_signifier = '********************************************************\n'
 
-    f = open(os.getcwd() + "/" + file_name + ".inp", "w")
-    f.write("*PREPRINT,MODEL=YES\n")
+    f = open(os.getcwd() + '/' + file_name + '.inp', 'w')
+    f.write('*PREPRINT,MODEL=YES\n')
 
     # [write part
-    f.write(part_data_header + part_name + "\n")
+    f.write(part_data_header + part_name + '\n')
     # nodes:
-    f.write("*NODE, NSET=%s\n" % nodes_name)
+    f.write('*NODE, NSET=%s\n' % nodes_name)
     for i in xrange(job.nodes.shape[0]):
-        f.write("%d, " % (i + 1))
+        f.write('%d, ' % (i + 1))
         for j in xrange(job.nodes.shape[1]):
-            f.write("%.12f" % job.nodes[i, j])
+            f.write('%.12f' % job.nodes[i, j])
             if j != job.nodes.shape[1] - 1:
-                f.write(", ")
-        f.write("\n")
+                f.write(', ')
+        f.write('\n')
 
     # elems:
     for i, elset in enumerate(elsets):
-        f.write("*ELEMENT, TYPE=B31, ELSET=%s\n" % (elems_name + "-" + str(i + 1)))
+        f.write('*ELEMENT, TYPE=B31, ELSET=%s\n' % (elems_name + '-' + str(i + 1)))
         for idx in elset:
-            f.write("%d, " % (idx + 1))
+            f.write('%d, ' % (idx + 1))
             for j, node_num in enumerate(job.elems[idx]):
-                f.write("%d" % (node_num + 1))
+                f.write('%d' % (node_num + 1))
                 if j != job.elems.shape[1] - 1:
-                    f.write(", ")
-            f.write("\n")
+                    f.write(', ')
+            f.write('\n')
 
     # sections:
     for i in xrange(len(elsets)):
         uma_rows, uma_cols = unique_major_axes[i].shape
         for j in xrange(uma_rows):
-            set_name = elems_name + "_Sect_Group-" + str(i + 1) + "-" + str(j + 1)
-            f.write("*ELSET, ELSET=%s\n" % set_name)
+            set_name = elems_name + '_Sect_Group-' + str(i + 1) + '-' + str(j + 1)
+            f.write('*ELSET, ELSET=%s\n' % set_name)
             rows = np.asarray(test_rows(unique_major_axes[i][j], major_axes[i]))
 
-            output_elems = ""
+            output_elems = ''
             for idx in rows:
-                output_elems += "%d\n" % (elsets[i][idx] + 1)
+                output_elems += '%d\n' % (elsets[i][idx] + 1)
             f.write(output_elems)
 
-            norm_vec = ""
+            norm_vec = ''
             for k in xrange(uma_cols):
                 norm_vec += str(unique_major_axes[i][j, k])
                 if k != uma_cols - 1:
-                    norm_vec += ", "
+                    norm_vec += ', '
 
-            sect_data = ["*BEAM GENERAL SECTION, SECTION=CIRC, ELSET=" + set_name,
-                          str(radii[i]), norm_vec, "%f, %f" % (youngs_modulus, shear_modulus)]
+            sect_data = ['*BEAM GENERAL SECTION, SECTION=CIRC, ELSET=' + set_name,
+                          str(radii[i]), norm_vec, '%f, %f' % (youngs_modulus, shear_modulus)]
 
             # write the section data
             for line in sect_data:
-                f.write("%s\n" % line)
+                f.write('%s\n' % line)
 
-    f.write(part_data_footer + "\n")
+    f.write(part_data_footer + '\n')
     f.write(break_signifier)
     # write part]
 
     # write material data
     for line in material_data:
-        f.write("%s\n" % line)
+        f.write('%s\n' % line)
     f.write(break_signifier)
 
     # create assembly
     for line in assembly_data_header:
-        f.write("%s\n" % line)
+        f.write('%s\n' % line)
     f.write(break_signifier)
 
     # instance part
@@ -168,14 +168,14 @@ def create_inp(file_name, jobs, radii, load_type, strain,
     zlen = np.linalg.norm(job.nodes[zmax_nodes[0]] - job.nodes[zmin_nodes[0]])
 
     minmax_nodes = {
-        "xmin" : xmin_nodes + 1,
-        "xmax" : xmax_nodes + 1,
+        'xmin' : xmin_nodes + 1,
+        'xmax' : xmax_nodes + 1,
 
-        "ymin" : ymin_nodes + 1,
-        "ymax" : ymax_nodes + 1,
+        'ymin' : ymin_nodes + 1,
+        'ymax' : ymax_nodes + 1,
 
-        "zmin" : zmin_nodes + 1,
-        "zmax" : zmax_nodes + 1,
+        'zmin' : zmin_nodes + 1,
+        'zmax' : zmax_nodes + 1,
     }
 
     write_dict_to_nset(f, minmax_nodes, instance_name, break_signifier=break_signifier)
@@ -190,11 +190,11 @@ def create_inp(file_name, jobs, radii, load_type, strain,
     elif load_type.lower() == 'bulk':
         loadpoint_keys = ['xmax', 'xmin', 'ymax', 'ymin', 'zmax', 'zmin']
     else:
-        raise Exception("Load type: %s is not a valid load type. Please choose from `axial`, `shear`, or `bulk`."
+        raise Exception('Load type: %s is not a valid load type. Please choose from `axial`, `shear`, or `bulk`.'
                         % load_type)
     
     for key in loadpoint_keys:
-        loadpoints[key + "_loadpoints"] = minmax_nodes[key]
+        loadpoints[key + '_loadpoints'] = minmax_nodes[key]
     
     write_dict_to_nset(f, loadpoints, instance_name, break_signifier=break_signifier)
 
@@ -210,21 +210,21 @@ def create_inp(file_name, jobs, radii, load_type, strain,
 
     # end assembly
     for line in assembly_data_footer:
-        f.write("%s\n" % line)
+        f.write('%s\n' % line)
     f.write(break_signifier)
 
     # create step
-    f.write("*STEP, PERTURBATION, NLGEOM=YES\n")
-    f.write("Apply load to faces\n")
-    f.write("*STATIC, STABILIZE\n")
+    f.write('*STEP, PERTURBATION, NLGEOM=YES\n')
+    f.write('Apply load to faces\n')
+    f.write('*STATIC, STABILIZE\n')
     f.write(break_signifier)
 
-    f.write("*BOUNDARY\n")
+    f.write('*BOUNDARY\n')
 
     # Apply symmetric boundary conditions at center planes
     if load_type.lower() != 'shear':
-        f.write("%s, 1\n" % centerplane_keys[0])
-        f.write("%s, 3\n" % centerplane_keys[1])
+        f.write('%s, 1\n' % centerplane_keys[0])
+        f.write('%s, 3\n' % centerplane_keys[1])
 
     # apply displacement
     for key in loadpoints.keys():
@@ -244,24 +244,24 @@ def create_inp(file_name, jobs, radii, load_type, strain,
             direction = 3
             displacement = strain * zlen / 2.0
         else:
-            raise Exception("Direction %s is not valid. Key should specify either x, y, or z direction." % key[0])
+            raise Exception('Direction %s is not valid. Key should specify either x, y, or z direction.' % key[0])
 
         if key[1:4] == 'min':
             sign = 1
         elif key[1:4] == 'max':
             sign = -1
         else:
-            raise Exception("Side %s is not valid. Key should specify min or max face after direction." % key[1:4])
+            raise Exception('Side %s is not valid. Key should specify min or max face after direction.' % key[1:4])
 
-        f.write("%s, %i, %i, %f\n" % (key, direction, direction, sign * displacement))
+        f.write('%s, %i, %i, %f\n' % (key, direction, direction, sign * displacement))
 
     f.write(break_signifier)
 
     # request outputs
-    f.write("*OUTPUT, FIELD\n")
-    f.write("*NODE OUTPUT\n")
-    f.write("U, RF\n")
-    f.write("*END STEP")
+    f.write('*OUTPUT, FIELD\n')
+    f.write('*NODE OUTPUT\n')
+    f.write('U, RF\n')
+    f.write('*END STEP')
 
     # close file
     f.close()
