@@ -35,20 +35,19 @@ def write_dict_to_nset(f, dictionary, instance_name, break_signifier='\n'):
                 f.write("%d\n" % idx)
             f.write(break_signifier)
 
-def create_inp(file_name, jobs, radii, load_type, strain, tile_pts='SC',
-                 youngs_modulus=200.0e9, shear_modulus=80.0e9, poisson_ratio=0.3):
+def create_inp(file_name, jobs, radii, load_type, strain,
+               youngs_modulus=200.0e9, shear_modulus=80.0e9, poisson_ratio=0.3):
     """
     Creates an Abaqus input file for the Bravais lattice specified in job with the name `file_name.inp`
 
     :param file_name         : `String`. The name of the input file.
-    :param job               : `BravaisJob`. The mesh to analyze. Must have member variables nodes and elems which are
-                                numpy arrays.
-    :param radius            : `Float`. The radius of the cross-sectional area of the struts (assumed to be circular).
+    :param jobs              : `Tuple`, dtype=`BravaisJob`. The mesh to analyze.
+                                Must have member variables nodes and elems which are numpy arrays.
+    :param radii             : `Tuple`, dtype=`Float`. The radius of the cross-sectional area of the struts
+                               (assumed to be circular).
     :param load_type         : `String`. Specifies the type of loading the lattice will be subjected to. Can be either
                                `axial`, `shear`, or `bulk`.
     :param strain            : `Float`. Amount of strain to apply to the `job`.
-    :param tile_pts          : `String`. lattice points to tile when selecting the min/max load points.
-                                Options are 'SC', 'FCC', or 'FC_only'.
     :param youngs_modulus    : `Float`. Young's modulus of the parent material.
     :param shear_modulus     : `Float`. Shear modulus of the parent material.
     :param poisson_ratio     : `Float`. Poisson ratio of the parent material.
