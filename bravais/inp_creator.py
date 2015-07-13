@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from assign_major_axes import assign_major_axes
+from assign_major_axes import *
 from bcs import get_face_nodes, get_center_planes
 from cpp_utils import *
 from mesher import Job
@@ -138,14 +138,14 @@ def create_inp(inp_description, jobs, radii, load_type, strain, csv_dir='csv_dat
 
         if len(jobs) == 1:
             elsets = (range(job.elems.shape[0]),)
-            major_axes.append(assign_major_axes(job))
+            major_axes.append(np.asarray(assign_major_axes(job.nodes, job.elems)))
             unique_major_axes.append(np.asarray(delete_duplicates_dbl(major_axes[0])))
         else:
             for j in jobs[1:]:
                 elsets = job.merge(j, return_elem_indices=True)
             for eset in elsets:
                 _job_temp = Job(job.nodes, job.elems[np.asarray(eset)])
-                _major_axes_temp = assign_major_axes(_job_temp)
+                _major_axes_temp = np.asarray(assign_major_axes(_job_temp.nodes, _job_temp.elems))
                 _unique_major_axes_temp = np.asarray(delete_duplicates_dbl(_major_axes_temp))
                 major_axes.append(_major_axes_temp)
                 unique_major_axes.append(_unique_major_axes_temp)
