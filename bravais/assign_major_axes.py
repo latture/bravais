@@ -1,4 +1,6 @@
 import numpy as np
+
+
 from math import cos, sin, sqrt, acos
 
 __all__ = ["assign_major_axes"]
@@ -36,33 +38,41 @@ def get_yz_rotation(vec):
         zrot *= -1.0
     if vec[2] < 0.0:
         yrot *= -1.0
-    # put results in numpy array
+
     return yrot, zrot
 
 
 def rotate_coords(xRot, yRot, zRot):
     """
-    Returns the local x, y, and z coordinate vectors that result from rotating the global x,y, and z vectors by the
+    Returns the local x, y, and z coordinate vectors that result from rotating the global x, y, and z vectors by the
     amounts xRot, yRot, and zRot, respectively.
 
     :param xRot : Clockwise rotation in radians to apply about the x-axis
     :param yRot : Clockwise rotation in radians to apply about the y-axis
     :param zRot : Clockwise rotation in radians to apply about the z-axis
     """
-    # define the unit vectors along the global x,y,z directions
-    globalCoords = np.matrix([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
-    # get rotation matrices
-    Rx = np.matrix([[1.0, 0.0, 0.0],
-                    [0.0, cos(xRot), -sin(xRot)],
-                    [0.0, sin(xRot), cos(xRot)]])
-    Ry = np.matrix([[cos(yRot), 0.0, sin(yRot)],
-                    [0.0, 1.0, 0.0],
-                    [-sin(yRot), 0, cos(yRot)]])
-    Rz = np.matrix([[cos(zRot), -sin(zRot), 0.0],
-                    [sin(zRot), cos(zRot), 0.0],
-                    [0.0, 0.0, 1.0]])
-    # combine rotation matrices and apply to global coordinates
-    return (Rx * Ry * Rz) * globalCoords
+    # This is a hard coded result from ((Rx * Ry * Rz) * globalCoords)[2]
+    # where global coords is given by:
+    # globalCoords = np.matrix([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
+    # and the rotation matrices are given by:
+    # Rx = np.matrix([[1.0, 0.0, 0.0],
+    #                 [0.0, cos(xRot), -sin(xRot)],
+    #                 [0.0, sin(xRot), cos(xRot)]])
+    # Ry = np.matrix([[cos(yRot), 0.0, sin(yRot)],
+    #                 [0.0, 1.0, 0.0],
+    #                 [-sin(yRot), 0, cos(yRot)]])
+    # Rz = np.matrix([[cos(zRot), -sin(zRot), 0.0],
+    #                 [sin(zRot), cos(zRot), 0.0],
+    #                 [0.0, 0.0, 1.0]])
+
+    cx = cos(xRot)
+    sx = sin(xRot)
+    cy = cos(yRot)
+    sy = sin(yRot)
+    cz = cos(zRot)
+    sz = sin(zRot)
+
+    return [-cx * cz * sy + sx * sz, cz * sx + cx * sy * sz, cx * cy]
 
 
 def get_major_axis(pt1, pt2, xRot):
@@ -77,7 +87,7 @@ def get_major_axis(pt1, pt2, xRot):
     """
     vec = pt2 - pt1
     yrot, zrot = get_yz_rotation(vec)
-    return rotate_coords(xRot, yrot, zrot)[2]
+    return rotate_coords(xRot, yrot, zrot)
 
 
 def assign_major_axes(mesh, xRot=0.0):
