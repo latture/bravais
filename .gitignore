@@ -1,4 +1,10 @@
+.DS_Store
 *.pyc
 *.o
 *.so
+*.odb
+*.inp
+*.txt
+*.csv
+*.data_available
 .idea/
