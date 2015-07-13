@@ -1,6 +1,7 @@
 .DS_Store
 *.pyc
 *.o
+*.c
 *.so
 *.odb
 *.inp
