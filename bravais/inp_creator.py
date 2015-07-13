@@ -214,18 +214,18 @@ def create_inp(inp_description, jobs, radii, load_type, strain, csv_dir='csv_dat
                 with open(set_filename, 'w') as csv_file:
                     csv_file.write(output_elems)
 
-                norm_vec = ''
-                for k in xrange(uma_cols):
-                    norm_vec += str(unique_major_axes[i][j, k])
-                    if k != uma_cols - 1:
-                        norm_vec += ', '
+            norm_vec = ''
+            for k in xrange(uma_cols):
+                norm_vec += str(unique_major_axes[i][j, k])
+                if k != uma_cols - 1:
+                    norm_vec += ', '
 
-                sect_data = ['*BEAM GENERAL SECTION, SECTION=CIRC, ELSET=' + set_name,
-                             str(radii[i]), norm_vec, '%f, %f' % (youngs_modulus, shear_modulus)]
+            sect_data = ['*BEAM GENERAL SECTION, SECTION=CIRC, ELSET=' + set_name,
+                         str(radii[i]), norm_vec, '%f, %f' % (youngs_modulus, shear_modulus)]
 
-                # write the section data
-                for line in sect_data:
-                    f.write('%s\n' % line)
+            # write the section data
+            for line in sect_data:
+                f.write('%s\n' % line)
 
     f.write(part_data_footer + '\n')
     f.write(break_signifier)
