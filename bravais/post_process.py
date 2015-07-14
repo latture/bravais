@@ -154,8 +154,8 @@ def calc_total_force(nodes, index, forces, data_direction):
     max_nodes, min_nodes = get_face_nodes(nodes, index)
     max_force = calc_total_value(max_nodes, forces)
     min_force = calc_total_value(min_nodes, forces)
-
-    assert np.allclose(np.abs(max_force), np.abs(min_force), atol=1e-7), "Forces on max and min faces are not equal."
+    
+    assert np.allclose(np.abs(max_force), np.abs(min_force), atol=1e-4, rtol=1e-2), "Forces on max and min faces are not equal."
 
     return max_force[data_direction]
 
