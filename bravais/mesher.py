@@ -29,7 +29,7 @@ class BravaisJob(Job):
         self.dimY = dimY
         self.dimZ = dimZ
         self.volume = volume
-        self.totalLength = None
+        self._total_length = None
 
     def merge(self, job, return_elem_indices=False):
         """
@@ -68,19 +68,21 @@ class BravaisJob(Job):
             elems_new_idx = replace_with_idx_int(elems, elems_new)
             return elems_orig_idx, elems_new_idx
 
-    def _calc_total_length(self):
+    @property
+    def total_length(self):
         """
-        Calculates the total length of all the struts.
+        Returns the total length of all the struts.
         """
-        assert self.totalLength is None, "Total length is already initialized."
-        self.totalLength = 0.0
-        for i in xrange(self.elems.shape[0]):
-            idx1 = self.elems[i, 0]
-            idx2 = self.elems[i, 1]
-            n1 = self.nodes[idx1]
-            n2 = self.nodes[idx2]
-            dist = np.linalg.norm(n2 - n1)
-            self.totalLength += dist
+        if self._total_length is None:
+            self._total_length = 0.0
+            for i in xrange(self.elems.shape[0]):
+                idx1 = self.elems[i, 0]
+                idx2 = self.elems[i, 1]
+                n1 = self.nodes[idx1]
+                n2 = self.nodes[idx2]
+                dist = np.linalg.norm(n2 - n1)
+                self._total_length += dist
+        return self._total_length
 
     def calc_cross_section(self, volume):
         """
@@ -88,10 +90,7 @@ class BravaisJob(Job):
         :param volume: the volume the struts should occupy.
         :return: The constant cross-sectional area of the struts.
         """
-        if self.totalLength is None:
-            self._calc_total_length()
-
-        return volume/self.totalLength
+        return volume/self.total_length
 
     def calc_volume(self, crossSectArea):
         """
@@ -99,10 +98,7 @@ class BravaisJob(Job):
         :param crossSectArea: The cross-sectional area of the struts.
         :return: The occupied volume.
         """
-        if self.totalLength is None:
-            self._calc_total_length()
-
-        return crossSectArea * self.totalLength
+        return crossSectArea * self.total_length
 
     def calc_rel_density(self, crossSectArea):
         """
