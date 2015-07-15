@@ -1,15 +1,16 @@
 __author__ = 'ryan'
 
-__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius"]
+__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius", "calc_radii"]
 
 import numpy as np
 from cpp_utils import replace_with_idx
+from math import sqrt
 
 def sort_rows(a):
     """
     Returns input_array with the rows sorted without reordering the entries.
 
-    :param input_array : 2D array (assumed to have 3 columns).
+    :param a : 2D array (assumed to have 3 columns).
     :return: 2D array sorted by rows.
     """
 
@@ -29,7 +30,6 @@ def calc_rel_density(total_volume, jobs, areas):
     vol = 0.0
     for i in xrange(len(jobs)):
         vol += jobs[i].calc_volume(areas[i])
-
     return vol / total_volume
 
 
@@ -74,3 +74,31 @@ def calc_radius(job, num_elems, aspect_ratio):
     strut_length = num_elems * np.linalg.norm(n2 - n1)
 
     return strut_length / (2.0 * aspect_ratio)
+
+
+def calc_radii(jobs, fractions, relative_density, total_volume):
+    """
+    Calculates the radii for the struts for in `jobs` such that the fraction 
+    of total material occupied in each job is equal to the specified fraction.
+    :param jobs             : `array_like`, dtype=`BravaisJob`. List of jobs.
+    :param fractions        : `array_like`, dtype=`Float`. Volume fraction of material to 
+                               allocate to the corresponding entry in job, i.e. the ith job
+                               in `jobs` with have the fraction of the total material specified
+                               by the ith entry in fractions. Length of `fractions` must equal the
+                               length of `jobs`.
+    :param relative_density : `Float`, `0.0<=relative_density<=1.0`. Relative density
+                               for the combined material of `jobs`.
+    :param total_volume     : `Float`. Total volume, including free space occupied by the jobs.
+                               This is not the total material volume.
+    """
+    assert len(jobs) == len(fractions), "Length of jobs and fractions are not equal. Each job must have 1 volume fraction."
+    assert abs(np.sum(fractions) - 1.0) <= 1.e-6, "Sum of fractions must add up to 1.0."
+
+    material_volume = relative_density * total_volume
+    radii = []
+
+    for j, f in zip(jobs, fractions):
+        vol = f * material_volume
+        radii.append(sqrt(vol / (j.total_length * np.pi)))
+
+    return tuple(radii)
