@@ -13,12 +13,10 @@ from python_utils import sort_rows
 from collections import namedtuple
 
 
-class UnitData(namedtuple("UnitData", ["unit_cells", "label", "aspect_ratios"])):
-    def __new__(cls, unit_cells, label, aspect_ratios):
-        assert len(unit_cells) == len(aspect_ratios), \
-            "Length of unit_cells does not match length of aspect_ratios."
+class UnitData(namedtuple("UnitData", ["unit_cells", "label"])):
+    def __new__(cls, unit_cells, label):
         assert type(label) is str, "label must be a string."
-        return super(UnitData, cls).__new__(cls, unit_cells, label, aspect_ratios)
+        return super(UnitData, cls).__new__(cls, unit_cells, label)
 
 
 '''
