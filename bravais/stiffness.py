@@ -48,7 +48,7 @@ def calc_stiffness(E, G, nu, direction_vec):
 
 
 def plot_stiffness_surface(props, num_rings=50, num_sectors=50, vmin=0.6, vmax=1.4,
-                           print_minmax=False, showfig=True, savefig=False):
+                           plot_title=None, print_minmax=False, showfig=True, savefig=False):
     """
     Plots the stiffness surface for the supplied properties.
     :param props        : `Props`. Defines the elastic properties for the material, e.g. E, G, and nu.
@@ -56,6 +56,7 @@ def plot_stiffness_surface(props, num_rings=50, num_sectors=50, vmin=0.6, vmax=1
     :param num_sectors  : `Int`, default=50. Number of longitudinal rings to evaluate the stiffness at.
     :param vmin         : `Float`, default=0.6. Lower bound on normalization for colormap.
     :param vmax         : `Float`, default=1.4. Upper bound on normalization for colormap.
+    :param plot_title   : `String`. Title for the plot displayed in upper left-hand corner.
     :param print_minmax : `Bool`, default=`False`. Whether to print the bounds on stiffness found while computing the surface.
     :param showfig      : `Bool`, default=`True`. Whether to display the resulting figure.
     :param savefig      : `Bool`, default=`False`. Whether to save the current figure to a file.
@@ -104,6 +105,8 @@ def plot_stiffness_surface(props, num_rings=50, num_sectors=50, vmin=0.6, vmax=1
     axis = fig.add_subplot(111, projection='3d', aspect='equal')
     plt.rcParams.update({'font.size': 24})
 
+    if plot_title is not None:
+        axis.text2D(0.05, 0.95, plot_title, transform=axis.transAxes, fontdict={'size' : 36})
     axis.set_zlim3d([-0.16, 0.16])
     axis.set_ylim3d([-0.16, 0.16])
     axis.set_xlim3d([-0.16, 0.16])
