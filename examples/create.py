@@ -41,6 +41,7 @@ def create():
             jobs.append(mesh_bravais(unit_cell, dimx, dimy, dimz))
 
         for p in percents:
+            percent_str = ('%.0f' % (p * 100)).zfill(3) + '-percent_SC'
             radii = calc_radii(jobs, (p, 1.0 - p), relative_density, total_volume)
 
             for lt in load_types:
@@ -48,7 +49,7 @@ def create():
                                           dimensions=[dimx, dimy, dimz],
                                           num_elems=num_elems,
                                           load_type=lt,
-                                          misc=('%.0f-percent_SC' % (p * 100)))
+                                          misc=percent_str)
                 create_inp(inp_desc, copy.deepcopy(jobs), radii=radii, load_type=lt, strain=0.1)
 
 
