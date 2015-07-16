@@ -1,6 +1,6 @@
 __author__ = 'ryan'
 
-__all__ = ["categorize_files", "NodalData", "process_data", "plot_data", "plot_bravais", "plot_indices"]
+__all__ = ["categorize_files", "NodalData", "process_data", "plot_data", "plot_bravais", "plot_indices", "COLORS"]
 
 import numpy as np
 from bcs import get_face_nodes
@@ -19,7 +19,8 @@ COLORS = {
         "cyan"   : (0.0, 0.7373, 0.8314),
         "teal"   : (0.0, 0.5882, 0.5333),
         "lime"   : (0.8039, 0.8627, 0.2235),
-        "brown"  : (0.4745, 0.3333, 0.2824)
+        "brown"  : (0.4745, 0.3333, 0.2824),
+        "black"  : (0.0, 0.0, 0.0)
         }
 
 
@@ -41,44 +42,62 @@ class NodalData(object):
                 self.bulk = np.loadtxt(path_to_files + f)
 
 
-def plot_data(x, y, labels, xlabel=None, ylabel=None, xlim=None, ylim=None, xticks=None, yticks=None,
-              add_legend=False, savefig=False, showfig=True, filename="test.png"):
+def plot_data(x, y, labels, xlabel=None, ylabel=None, xlim=None, ylim=None, xticks=None, yticks=None, colors=None,
+              linestyles=None, markers=None, add_legend=False, savefig=False, showfig=True, filename="test.png"):
     """
     Plots the rows of `y` with respect to the vector `x`.
-    :param x: Array. x-axis values.
-    :param y: Matrix. Each row of `y` will constitute a line plotted with respect to `x`. The number of entries in x
-                      must match the number of columns of `y`.
-    :param labels: Array, dtype=`String`. Labels for each line. every row in `y` must have a corresponding label.
-    :param xlabel: `String`. Label for x-axis.
-    :param ylabel: `String`. Label for y-axis.
-    :param xlim: Array, `len(xlim)==2`. Upper and lower limits for the x-axis.
-    :param ylim: Array, `len(ylim)==2`. Upper and lower limits for the y-axis.
-    :param xticks: Array. List of ticks to use on the x-axis. Should be within the upper and lower bounds of the x-axis.
-    :param yticks: Array. List of ticks to use on the y-axis. Should be within the upper and lower bounds of the y-axis.
-    :param add_legend: `Bool`, default=`False`. If `True` a legend will be added to the plot.
-    :param savefig: `Bool`, default=`False`. Whether to save the figure.
-    :param showfig: `Bool`, default=`True`. Whether to show the figure.
-    :param filename: `String`, default=`test.png`. Name of file to save the figure to if `savefig=True`.
+    :param x          : `array_like`. x-axis values.
+    :param y          : Matrix. Each row of `y` will constitute a line plotted with respect to `x`. The number of entries in x
+                        must match the number of columns of `y`.
+    :param labels     : `array_like`, dtype=`String`. Labels for each line. every row in `y` must have a corresponding label.
+    :param xlabel     : `String`. Label for x-axis.
+    :param ylabel     : `String`. Label for y-axis.
+    :param xlim       : `array_like`, `len(xlim)==2`. Upper and lower limits for the x-axis.
+    :param ylim       : `array_like`, `len(ylim)==2`. Upper and lower limits for the y-axis.
+    :param xticks     : `array_like`. List of ticks to use on the x-axis. Should be within the upper and lower bounds of the x-axis.
+    :param yticks     : `array_like`. List of ticks to use on the y-axis. Should be within the upper and lower bounds of the y-axis.
+    :param colors     : `array_like`. List of colors to plot each row in `y`.
+                         Colors will be cycled if fewer colors are specified than the number of rows in `y`.
+    :param linestyles : `array_like`. List Matplotlib designations for the linestyle for each row in `y`.
+                         Linestyles will be cycled if fewer linestyles are specified than the number of rows in `y`.
+    :param markers    : `array_like`. List Matplotlib designations for the colors for each row in `y`.
+                         Markers will be cycled if fewer markers are specified than the number of rows in `y`.
+    :param add_legend : `Bool`, default=`False`. If `True` a legend will be added to the plot.
+    :param savefig    : `Bool`, default=`False`. Whether to save the figure.
+    :param showfig    : `Bool`, default=`True`. Whether to show the figure.
+    :param filename   : `String`, default=`test.png`. Name of file to save the figure to if `savefig=True`.
     """
     assert y.shape[0] == len(labels), "Length of labels does not match the number of rows in y."
-    # define the colors and markers for the plot
-    color = itertools.cycle((COLORS["blue"],
-                             COLORS["green"],
-                             COLORS["red"],
-                             COLORS["orange"],
-                             COLORS["purple"],
-                             COLORS["grey"],
-                             COLORS["cyan"],
-                             COLORS["teal"],
-                             COLORS["lime"],
-                             COLORS["brown"]))
-    marker = itertools.cycle((u's', u'>', u'o', u'D', u'p',u'H', u'^', u'v', u'd'))
+
+    if colors is not None:
+        colors = itertools.cycle(colors)
+    else:
+        colors = itertools.cycle((COLORS["blue"],
+                                  COLORS["green"],
+                                  COLORS["red"],
+                                  COLORS["orange"],
+                                  COLORS["purple"],
+                                  COLORS["grey"],
+                                  COLORS["cyan"],
+                                  COLORS["teal"],
+                                  COLORS["lime"],
+                                  COLORS["brown"]))
+
+    if linestyles is not None:
+        linestyles = itertools.cycle(linestyles)
+    else:
+        linestyles = itertools.cycle(('-',))
+
+    if markers is not None:
+        markers = itertools.cycle(markers)
+    else:
+        markers = itertools.cycle((u's', u'>', u'o', u'D', u'p',u'H', u'^', u'v', u'd'))
 
     fig = plt.figure(figsize=(8, 6), dpi=150)
     axis = fig.add_subplot(111)
 
     for i in xrange(y.shape[0]):
-        axis.plot(x, y[i, :], label=labels[i], linewidth=2, marker=marker.next(), color=color.next())
+        axis.plot(x, y[i, :], label=labels[i], linewidth=2, marker=markers.next(), color=colors.next(), linestyle=linestyles.next())
 
     plt.rcParams.update({'font.size': 22})
 
@@ -106,9 +125,9 @@ def plot_data(x, y, labels, xlabel=None, ylabel=None, xlim=None, ylim=None, xtic
 def categorize_files(filenames, keys):
     """
     Splits the file names up based on whether the file name contains a keyword.
-    :param filenames: `List`. List of file names to categorize.
-    :param keys: `Tuple`. Keywords to search the file names for.
-    :return: `Tuple`. categorized files. The `ith` tuple in the return will contain the matches to the `ith` key.
+    :param filenames  : `List`. List of file names to categorize.
+    :param keys       : `array_like`. Keywords to search the file names for.
+    :return           : `array_like`. categorized files. The `ith` tuple in the return will contain the matches to the `ith` key.
     """
     data = []
     for k in keys:
@@ -123,10 +142,10 @@ def categorize_files(filenames, keys):
 def calc_total_value(indices, values):
     """
     Totals the rows in in `values` referenced by the variable `indices`.
-    :param indices : `Array`, dtype=`int`. Array containing the indices of the rows to sum.
-    :param values : `Array`, dtype=`float`. Nodal values. If data is from 3D analysis,
+    :param indices : `array_like`, dtype=`int`. Array containing the indices of the rows to sum.
+    :param values  : `array_like`, dtype=`float`. Nodal values. If data is from 3D analysis,
                            Each row contains the x, y, and z components, respectively.
-    :return: Total values summed by column over the specified rows. `Array`, dtype=`float`.
+    :return        : Total values summed by column over the specified rows. `array_like`, dtype=`float`.
     """
     # initialize variables to hold displacement in x, y, and z directions
     cols = len(values[0])
@@ -145,11 +164,11 @@ def calc_total_force(nodes, index, forces, data_direction):
     Calculates the total force on the external face specified by `index` in the direction specified by `data_direction`.
     Forces are calculated for the minimum and maximum faces to check the values are the same, i.e. the job is in
     equilibrium, but only the force data for one face is returned.
-    :param nodes: 2D Numpy array, dtype=`float`. List of nodal coordinates.
-    :param index: `Int`. Index of the direction to search for the min and max nodes.
-    :param forces: 1D Numpy array, dtype=`float`. Force data to total.
-    :param data_direction: `Int`. Index of the direction for the total force to return.
-    :return: 'Float'. Total force.
+    :param nodes          : 2D Numpy array, dtype=`float`. List of nodal coordinates.
+    :param index          : `Int`. Index of the direction to search for the min and max nodes.
+    :param forces         : 1D Numpy array, dtype=`float`. Force data to total.
+    :param data_direction : `Int`. Index of the direction for the total force to return.
+    :return               : 'Float'. Total force.
     """
     max_nodes, min_nodes = get_face_nodes(nodes, index)
     max_force = calc_total_value(max_nodes, forces)
@@ -163,11 +182,11 @@ def calc_total_force(nodes, index, forces, data_direction):
 def calc_average_displacements(nodes, index, displacements, data_direction):
     """
     Calculates the average displacements of the displacements on the min and max faces of `nodes`.
-    :param nodes: 2D Numpy array, dtype=`float`. List of nodal coordinates.
-    :param index: `Int`. Index of the direction to search for the min and max nodes.
-    :param displacements: 1D Numpy array, dtype=`float`. Dispalcement data to average.
-    :param data_direction: `Int`. Index of the direction for averaged displacements over the faces to return.
-    :return: `Float`. Average displacement.
+    :param nodes          : 2D Numpy array, dtype=`float`. List of nodal coordinates.
+    :param index          : `Int`. Index of the direction to search for the min and max nodes.
+    :param displacements  : 1D Numpy array, dtype=`float`. Dispalcement data to average.
+    :param data_direction : `Int`. Index of the direction for averaged displacements over the faces to return.
+    :return               : `Float`. Average displacement.
     """
     max_nodes, min_nodes = get_face_nodes(nodes, index)
     max_disp = calc_total_value(max_nodes, displacements) / max_nodes.shape[0]
@@ -267,15 +286,15 @@ def plot_bravais(unit_cell, dimX=1, dimY=1, dimZ=1, color='#000000', showfig=Tru
     """
     Plots the specified unit cell the given dimensions in x, y and z.
 
-    :param unit_cell: BravaisLattice. Contains `nodes` and `elems` member variables to plot.
-    :param dimX: `Int`. Number of times to repeat the unit cell in the x dimension.
-    :param dimY: `Int`. Number of times to repeat the unit cell in the y dimension.
-    :param dimZ: `Int`. Number of times to repeat the unit cell in the z dimension.
-    :param color: `Tuple` or `String`, Default=`'#000000'`. Valid color to plot the lattice.
-                   Can be hex values, (r, g, b, a) tuples, or any valid format for matplotlib color specifications.
-    :param showfig: Bool, Default=`True`. Whether to show the figure after creation.
-    :param savefig: Bool, Default=`False`. Whether to save the figure after creation.
-    :param filename: `String`. Name to save the figure under if `savefig` is `True`.
+    :param unit_cell : BravaisLattice. Contains `nodes` and `elems` member variables to plot.
+    :param dimX      : `Int`. Number of times to repeat the unit cell in the x dimension.
+    :param dimY      : `Int`. Number of times to repeat the unit cell in the y dimension.
+    :param dimZ      : `Int`. Number of times to repeat the unit cell in the z dimension.
+    :param color     : `Tuple` or `String`, Default=`'#000000'`. Valid color to plot the lattice.
+                        Can be hex values, (r, g, b, a) tuples, or any valid format for matplotlib color specifications.
+    :param showfig   : Bool, Default=`True`. Whether to show the figure after creation.
+    :param savefig   : Bool, Default=`False`. Whether to save the figure after creation.
+    :param filename  : `String`. Name to save the figure under if `savefig` is `True`.
     """
     if dimX == dimY == dimZ == 1:
         job = unit_cell
