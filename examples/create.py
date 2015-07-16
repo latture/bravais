@@ -32,6 +32,8 @@ def create():
     load_types = ('axial', 'bulk', 'shear',)
 
     percents = np.linspace(0.1, 0.9, 9)
+    percents = np.insert(percents, 0, 0.001)
+    percents = np.append(percents, 0.999)
 
     for data in unit_data:
         jobs = []
