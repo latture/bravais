@@ -13,7 +13,8 @@ def run():
     for f in os.listdir(os.getcwd()):
         try:
             fbase, ext = f.split('.')
-            inp_files.append(fbase)
+            if ext == 'inp':
+                inp_files.append(fbase)
         except ValueError:
             pass
 
