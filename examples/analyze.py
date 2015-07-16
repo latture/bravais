@@ -9,6 +9,7 @@ from bravais.unit_cells import SimpleCubic, FCC, BCC, UnitData
 from bravais.mesher import mesh_bravais
 from bravais.post_process import process_data, plot_data, COLORS
 from bravais.python_utils import add_tie_line
+from bravais.stiffness import plot_stiffness_surface, Props
 
 
 def analyze():
@@ -39,7 +40,7 @@ def analyze():
     for data in unit_data:
         E = np.empty(len(percents))
         G = np.empty_like(E)
-        v = np.empty_like(E)
+        nu = np.empty_like(E)
         K = np.empty_like(E)
 
         job = mesh_bravais(data.unit_cells[0], dimx, dimy, dimz)
@@ -63,32 +64,38 @@ def analyze():
             print "Processing %s %s..." % (data.label, percent_str)
             E_i, v_i, G_i, K_i = process_data(job, txt_files, path_to_files=current_dir)
             E[i] = E_i / (relative_density * E_o)
-            v[i] = v_i
+            nu[i] = v_i
             G[i] = G_i / (relative_density * E_o)
             K[i] = K_i / (relative_density * E_o)
+            plot_stiffness_surface(Props(E=E[i], G=G[i], nu=nu[i], label=data.label+'-'+percent_str+'_SC'),
+                                   showfig=False, savefig=True, num_rings=100, num_sectors=100)
 
         E = add_tie_line(percents, E)
         G = add_tie_line(percents, G)
-        v = add_tie_line(percents, v)
+        nu = add_tie_line(percents, nu)
         K = add_tie_line(percents, K)
 
         unit_cell_names = [data.label, data.label + "_tie_line"]
 
         plot_data(percents, E, unit_cell_names, xlabel="Percent SC, %", 
                   markers=[u'o', u''], linestyles=['-', '-.'], colors=unit_colors[data.label],
-                  ylabel="Young's Modulus, $E_{1}/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35])
+                  ylabel="Young's Modulus, $E_{1}/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35],
+                  showfig=False, savefig=True, filename=data.label+'_youngs.svg')
 
-        plot_data(percents, v, unit_cell_names, xlabel="Percent SC, %", 
+        plot_data(percents, nu, unit_cell_names, xlabel="Percent SC, %",
                   markers=[u'o', u''], linestyles=['-', '-.'], colors=unit_colors[data.label],
-                  ylabel="Poission ratio, $\\nu_{12}$", xlim=[0, 1], ylim=[-0.01, 0.51])
+                  ylabel="Poission ratio, $\\nu_{12}$", xlim=[0, 1], ylim=[-0.01, 0.51],
+                  showfig=False, savefig=True, filename=data.label+'_poisson.svg')
 
         plot_data(percents, G, unit_cell_names, xlabel="Percent SC, %",
                   markers=[u'o', u''], linestyles=['-', '-.'], colors=unit_colors[data.label],
-                  ylabel="Shear Modulus, $G_{12}/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35])
+                  ylabel="Shear Modulus, $G_{12}/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35],
+                  showfig=False, savefig=True, filename=data.label+'_shear.svg')
 
         plot_data(percents, K, unit_cell_names, xlabel="Percent SC, %", 
                   markers=[u'o', u''], linestyles=['-', '-.'], colors=unit_colors[data.label],
-                  ylabel="Bulk modulus, $K/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35])
+                  ylabel="Bulk modulus, $K/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35],
+                  showfig=False, savefig=True, filename=data.label+'_bulk.svg')
                                
 
 if __name__ == '__main__':
