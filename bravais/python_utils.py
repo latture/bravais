@@ -1,10 +1,11 @@
 __author__ = 'ryan'
 
-__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius", "calc_radii"]
+__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius", "calc_radii", "add_tie_line"]
 
 import numpy as np
 from cpp_utils import replace_with_idx
 from math import sqrt
+
 
 def sort_rows(a):
     """
@@ -102,3 +103,18 @@ def calc_radii(jobs, fractions, relative_density, total_volume):
         radii.append(sqrt(vol / (j.total_length * np.pi)))
 
     return tuple(radii)
+
+
+def add_tie_line(x, y):
+    """
+    Appends a row to `y` which is the linear tie line between the first and last data points for `x` and `y`
+    evaluated at each x point.
+    :param x : `array_like`. 1D array of x points.
+    :param y : `array_like`. 1D array of y points.
+    :return  : 2D numpy array where the first row is the original y data and the second row is the data 
+               from evaluating the linear fit at each x value.
+    """
+    lin_fit = np.polyfit([x[0], x[-1]], [y[0], y[-1]], 1)
+    fit_fcn = np.poly1d(lin_fit)
+    y_tie_line = fit_fcn(x)
+    return np.vstack([y, y_tie_line])
