@@ -69,7 +69,7 @@ def analyze():
             K[i] = K_i / (relative_density * E_o)
             plot_stiffness_surface(Props(E=E[i], G=G[i], nu=nu[i], label=data.label+'-'+percent_str+'_SC'),
                                    showfig=False, savefig=True, num_rings=100, num_sectors=100,
-                                   plot_title=('%.0f%% SC' % (p * 100)))
+                                   plot_title=('%.0f%% SC' % (p * 100)), transparent=False)
 
         E = add_tie_line(percents, E)
         G = add_tie_line(percents, G)
