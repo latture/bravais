@@ -48,7 +48,7 @@ def calc_stiffness(E, G, nu, direction_vec):
 
 
 def plot_stiffness_surface(props, num_rings=50, num_sectors=50, vmin=0.6, vmax=1.4,
-                           plot_title=None, print_minmax=False, showfig=True, savefig=False):
+                           plot_title=None, print_minmax=False, showfig=True, savefig=False, transparent=True):
     """
     Plots the stiffness surface for the supplied properties.
     :param props        : `Props`. Defines the elastic properties for the material, e.g. E, G, and nu.
@@ -59,7 +59,9 @@ def plot_stiffness_surface(props, num_rings=50, num_sectors=50, vmin=0.6, vmax=1
     :param plot_title   : `String`. Title for the plot displayed in upper left-hand corner.
     :param print_minmax : `Bool`, default=`False`. Whether to print the bounds on stiffness found while computing the surface.
     :param showfig      : `Bool`, default=`True`. Whether to display the resulting figure.
-    :param savefig      : `Bool`, default=`False`. Whether to save the current figure to a file.
+    :param savefig      : `Bool`, default=`False`. Whether to save the current figure to a file.,
+    :param transparent  : `Bool`, default=`True`. If `True`, will make the figure and axes backgrounds
+                           transparent when saving, but will not affect the displayed image on the screen.
     """
     upper_bound = 1.0 / 6.0
 
@@ -113,7 +115,7 @@ def plot_stiffness_surface(props, num_rings=50, num_sectors=50, vmin=0.6, vmax=1
     p = axis.plot_surface(x_data, y_data, z_data, rstride=1, cstride=1, facecolors=colors, linewidth=0)
 
     if savefig:
-        plt.savefig(props.label + "_polar_surface.png", dpi=250, transparent=True, bbox_inches='tight')
+        plt.savefig(props.label + "_polar_surface.png", dpi=250, transparent=transparent, bbox_inches='tight')
 
     if showfig:
         plt.show()
