@@ -31,7 +31,7 @@ def create():
 
     load_types = ('axial', 'bulk', 'shear',)
 
-    percents = np.linspace(0.1, 0.9, 9)
+    percents = np.linspace(0.01, 0.99, 99)
     percents = np.insert(percents, 0, 0.001)
     percents = np.append(percents, 0.999)
 
