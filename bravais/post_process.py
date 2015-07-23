@@ -1,13 +1,14 @@
 __author__ = 'ryan'
 
 __all__ = ["categorize_files", "NodalData", "process_data", "plot_data", 
-           "plot_bravais", "plot_indices", "COLORS"]
+           "plot_histogram", "plot_bravais", "plot_indices", "COLORS"]
 
 import numpy as np
 from bcs import get_face_nodes
 import matplotlib.pyplot as plt
 import itertools
 from mesher import mesh_bravais
+from python_utils import calc_axial_strain
 
 
 COLORS = {
@@ -121,6 +122,79 @@ def plot_data(x, y, labels, xlabel=None, ylabel=None, xlim=None, ylim=None, xtic
         plt.savefig(filename, dpi=150, transparent=True, bbox_inches='tight')
     if showfig:
         plt.show()
+
+
+def plot_histogram(strains, bins=10, labels=None, ylim=(0, 1), xlim=None,
+                   yticks=None, xticks=None, xlabel=None, ylabel=None, add_legend=False,
+                   colors=None, savefig=False, showfig=True, filename='hist.png'):
+    """
+    Plots a histogram of the input strains divided into the specified number of bins 
+    :param strains    : 2D Numpy array. Each row of `strains` will constitute a set of histogram data. 
+    :param labels     : `array_like`, dtype=`String`. Labels for each line. every row in `strains` must have a corresponding label.
+    :param xlabel     : `String`. Label for x-axis.
+    :param ylabel     : `String`. Label for y-axis.
+    :param xlim       : `array_like`, `len(xlim)==2`. Upper and lower limits for the x-axis.
+    :param ylim       : `array_like`, `len(ylim)==2`. Upper and lower limits for the y-axis.
+    :param xticks     : `array_like`. List of ticks to use on the x-axis. Should be within the upper and lower bounds of the x-axis.
+    :param yticks     : `array_like`. List of ticks to use on the y-axis. Should be within the upper and lower bounds of the y-axis.
+    :param colors     : `array_like`. List of colors to plot each row in `y`.
+                         Colors will be cycled if fewer colors are specified than the number of rows in `y`.
+    :param add_legend : `Bool`, default=`False`. If `True` a legend will be added to the plot.
+    :param savefig    : `Bool`, default=`False`. Whether to save the figure.
+    :param showfig    : `Bool`, default=`True`. Whether to show the figure.
+    :param filename   : `String`, default=`test.png`. Name of file to save the figure to if `savefig=True`.
+    """
+    assert strains.shape[0] == len(labels), "Length of `labels` does not match the number of rows in `strains`."
+
+    fig = plt.figure(figsize=(10, 6), dpi=150)
+    axis = fig.add_subplot(111)
+
+    if colors is not None:
+        colors = itertools.cycle(colors)
+    else:
+        colors = itertools.cycle((COLORS["blue"],
+                                  COLORS["green"],
+                                  COLORS["red"],
+                                  COLORS["orange"],
+                                  COLORS["purple"],
+                                  COLORS["grey"],
+                                  COLORS["cyan"],
+                                  COLORS["teal"],
+                                  COLORS["lime"],
+                                  COLORS["brown"]))
+
+    for i in xrange(strains.shape[0]):
+        counts, bin_edges = np.histogram(strains[i], bins=bins, density=True)
+        counts /= np.sum(counts)
+
+        label = labels[i].lower()
+
+        axis.bar(bin_edges[:-1], counts, width=abs(bin_edges[1]-bin_edges[0]), label=labels[i], color=colors.next())
+
+    plt.rcParams.update({'font.size': 22})
+
+    # update plot labels and format based on user input 
+    if xlabel is not None:
+        axis.set_xlabel(xlabel)
+    if ylabel is not None:
+        axis.set_ylabel(ylabel)
+    if xlim is not None:
+        axis.set_xlim(xlim)
+    else:
+        axis.set_xlim(min(bin_edges), max(bin_edges))
+    if ylim is not None:
+        axis.set_ylim(ylim)
+    if xticks is not None:
+        axis.set_xticks(xticks)
+    if yticks is not None:
+        axis.set_yticks(yticks)
+    if add_legend:
+        plt.legend(prop={'size': 12}, loc="upper right")
+    if savefig:
+        plt.savefig(filename, dpi=150, transparent=True, bbox_inches='tight')
+    if showfig:
+        plt.show()
+    plt.close('all')
 
 
 def categorize_files(filenames, keys):
