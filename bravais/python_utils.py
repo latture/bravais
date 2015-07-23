@@ -1,6 +1,7 @@
 __author__ = 'ryan'
 
-__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius", "calc_radii", "add_tie_line"]
+__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius", 
+           "calc_radii", "add_tie_line", "calc_axial_strain"]
 
 import numpy as np
 from cpp_utils import replace_with_idx
@@ -119,3 +120,45 @@ def add_tie_line(x, y):
     fit_fcn = np.poly1d(lin_fit)
     y_tie_line = fit_fcn(x)
     return np.vstack([y, y_tie_line])
+
+
+def calc_axial_strain(displacements, job):
+    """
+    Returns the axial strain in each strut in the `job`. The `ith` entry in
+    the returned array corresponds to the axial strain in the `ith` element
+    of the `job`.
+    :param displacements : `array_like`. Nodal displacements to apply to the job.
+    :param job           : `Job`. Object that contains the element and node list.
+    :return              :  Numpy array, dtype=`float`. Elemental axial strains.
+    """
+    num_elems = job.elems.shape[0]
+    axial_strain = np.empty(num_elems)
+
+    for i in xrange(num_elems):
+        # pull out node numbers from element
+        nn1 = job.elems[i, 0]
+        nn2 = job.elems[i, 1]
+
+        # get the nodes referenced by the element
+        n1 = job.nodes[nn1]
+        n2 = job.nodes[nn2]
+
+        # calculate the vector between the nodes
+        dn = n2 - n1
+
+        # calcuate the original length of the element
+        length_orig = np.sqrt(dn.dot(dn))
+
+        # move nodes by appropriate displacement
+        n1_def = n1 + displacements[nn1, 0:3]
+        n2_def = n2 + displacements[nn2, 0:3]
+
+        # recalculate distance between nodes
+        dn_def = n2_def - n1_def
+
+        # calculate deformed length
+        length_def = np.sqrt(dn_def.dot(dn_def))
+
+        axial_strain[i] = (length_def - length_orig) / length_orig
+
+    return axial_strain
