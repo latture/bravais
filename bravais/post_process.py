@@ -1,6 +1,7 @@
 __author__ = 'ryan'
 
-__all__ = ["categorize_files", "NodalData", "process_data", "plot_data", "plot_bravais", "plot_indices", "COLORS"]
+__all__ = ["categorize_files", "NodalData", "process_data", "plot_data", 
+           "plot_bravais", "plot_indices", "COLORS"]
 
 import numpy as np
 from bcs import get_face_nodes
