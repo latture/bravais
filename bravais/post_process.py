@@ -1,13 +1,15 @@
 __author__ = 'ryan'
 
 __all__ = ["categorize_files", "NodalData", "process_data", "plot_data", 
-           "plot_bravais", "plot_indices", "COLORS"]
+           "plot_bravais", "plot_indices", "COLORS", "plot_single_normals"]
 
 import numpy as np
 from bcs import get_face_nodes
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import itertools
 from mesher import mesh_bravais
+from assign_major_axes import *
 
 
 COLORS = {
@@ -121,6 +123,7 @@ def plot_data(x, y, labels, xlabel=None, ylabel=None, xlim=None, ylim=None, xtic
         plt.savefig(filename, dpi=150, transparent=True, bbox_inches='tight')
     if showfig:
         plt.show()
+    plt.close('all')
 
 
 def categorize_files(filenames, keys):
@@ -283,7 +286,8 @@ def process_data(job, files, path_to_files):
     return youngs_modulus, poisson_ratio, shear_modulus, bulk_modulus
 
 
-def plot_bravais(unit_cell, dimX=1, dimY=1, dimZ=1, color='#000000', showfig=True, savefig=False, filename="test.svg"):
+def plot_bravais(unit_cell, dimX=1, dimY=1, dimZ=1, color='#000000', showaxes=False,
+                 showfig=True, savefig=False, filename="test.svg"):
     """
     Plots the specified unit cell the given dimensions in x, y and z.
 
@@ -293,8 +297,9 @@ def plot_bravais(unit_cell, dimX=1, dimY=1, dimZ=1, color='#000000', showfig=Tru
     :param dimZ      : `Int`. Number of times to repeat the unit cell in the z dimension.
     :param color     : `Tuple` or `String`, Default=`'#000000'`. Valid color to plot the lattice.
                         Can be hex values, (r, g, b, a) tuples, or any valid format for matplotlib color specifications.
-    :param showfig   : Bool, Default=`True`. Whether to show the figure after creation.
-    :param savefig   : Bool, Default=`False`. Whether to save the figure after creation.
+    :param showaxes  : `Bool`. Whether to show x, y, z axes on plot.
+    :param showfig   : `Bool`, Default=`True`. Whether to show the figure after creation.
+    :param savefig   : `Bool`, Default=`False`. Whether to save the figure after creation.
     :param filename  : `String`. Name to save the figure under if `savefig` is `True`.
     """
     if dimX == dimY == dimZ == 1:
@@ -315,7 +320,8 @@ def plot_bravais(unit_cell, dimX=1, dimY=1, dimZ=1, color='#000000', showfig=Tru
         zpts = [pt1[2], pt2[2]]
         axis.plot(xpts, ypts, zpts, marker='o', linewidth=9, markersize=12, color=color)
 
-    plt.axis('off')
+    if not showaxes:
+        plt.axis('off')
     if savefig:
         plt.savefig(filename, transparent=True, dpi=150)
     if showfig:
@@ -336,3 +342,51 @@ def plot_indices(nodes):
         axis.text(nodes[i, 0]+0.01, nodes[i, 1]+0.01, nodes[i, 2]+0.01, markers[i], zdir='x')
     axis.plot(nodes[:, 0], nodes[:, 1], nodes[:, 2], marker=u'o', linestyle='None')
     plt.show()
+
+
+def plot_single_normals(unit_cell, rotation=0.0, showaxes=False, showfig=False, savefig=False, filename="test.png"):
+    """
+    Plots a single unit cell along with the major axis for each element.
+
+    :param unit_cell: `BravaisLattice`. Contains `nodes` and `elems` member variables to plot.
+    :param rotation: `Float`. The amount the major axis is rotated clockwise relative to the z-axis of the element if it were
+     aligned along the x-axis and you were looking down the element from the end point to the first point.
+    :param showfig: `Bool`. Whether to display the figure.
+    :param savefig: `Bool`. Whether to save the figure.
+    :param filename: `String`, Default="test.png". Name of saved file.
+    """
+
+    # get the major axes for the unit cell
+    majorAxes = np.asarray(assign_major_axes(unit_cell.nodes, unit_cell.elems, rotation))
+
+    # create a figure and add an axis
+    fig = plt.figure(figsize=(4, 6))
+    axis = fig.add_subplot(111, projection='3d', aspect='equal')
+
+    for i in range(len(unit_cell.elems)):
+        pt1 = unit_cell.nodes[unit_cell.elems[i, 0]]
+        pt2 = unit_cell.nodes[unit_cell.elems[i, 1]]
+        xPts = [pt1[0], pt2[0]]
+        yPts = [pt1[1], pt2[1]]
+        zPts = [pt1[2], pt2[2]]
+        axis.plot(xPts, yPts, zPts, marker='o', linewidth=6, markersize=10, color="#3DCD3D")
+
+        vec1 = pt2 - pt1
+        vec1 /= np.sqrt(vec1.dot(vec1))
+        vec2 = majorAxes[i]
+        vec2 /= np.sqrt(vec2.dot(vec2))
+
+        pt1 = ((pt2 + pt1) / 2.0)
+        pt2 = pt1 + majorAxes[i] / 15.0
+        xPts = [pt1[0], pt2[0]]
+        yPts = [pt1[1], pt2[1]]
+        zPts = [pt1[2], pt2[2]]
+        axis.plot(xPts, yPts, zPts, linewidth=3, color="#E92525")
+    if not showaxes:
+        plt.axis('off')
+
+    if showfig:
+        plt.show()
+    if savefig:
+        plt.savefig(filename, transparent=True, dpi=150)
+    plt.close('all')
