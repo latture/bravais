@@ -119,7 +119,6 @@ def assign_major_axes(double[:, ::1] nodes, long[:, ::1] elems, double xrot=0.0)
         long num_elems = elems.shape[0]
         long dofs_per_node = 3
         double[:, ::1] major_axes = np.empty((num_elems, dofs_per_node))
-        # double *major_axes_ptr = &major_axes[0,]
         double[::1] axis = np.empty(dofs_per_node)
         double[::1] delta = np.empty(dofs_per_node)
         double *delta_ptr = &delta[0]

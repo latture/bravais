@@ -2368,7 +2368,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
  *         long num_elems = elems.shape[0]
  *         long dofs_per_node = 3             # <<<<<<<<<<<<<<
  *         double[:, ::1] major_axes = np.empty((num_elems, dofs_per_node))
- *         # double *major_axes_ptr = &major_axes[0,]
+ *         double[::1] axis = np.empty(dofs_per_node)
  */
   __pyx_v_dofs_per_node = 3;
 
@@ -2376,8 +2376,8 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
  *         long num_elems = elems.shape[0]
  *         long dofs_per_node = 3
  *         double[:, ::1] major_axes = np.empty((num_elems, dofs_per_node))             # <<<<<<<<<<<<<<
- *         # double *major_axes_ptr = &major_axes[0,]
  *         double[::1] axis = np.empty(dofs_per_node)
+ *         double[::1] delta = np.empty(dofs_per_node)
  */
   __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 121; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
@@ -2429,19 +2429,19 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "bravais/assign_major_axes/assign_major_axes.pyx":123
+  /* "bravais/assign_major_axes/assign_major_axes.pyx":122
+ *         long dofs_per_node = 3
  *         double[:, ::1] major_axes = np.empty((num_elems, dofs_per_node))
- *         # double *major_axes_ptr = &major_axes[0,]
  *         double[::1] axis = np.empty(dofs_per_node)             # <<<<<<<<<<<<<<
  *         double[::1] delta = np.empty(dofs_per_node)
  *         double *delta_ptr = &delta[0]
  */
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 122; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 122; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_From_long(__pyx_v_dofs_per_node); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_long(__pyx_v_dofs_per_node); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 122; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_5 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -2454,41 +2454,41 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
     }
   }
   if (!__pyx_t_5) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 122; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 122; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5); __Pyx_GIVEREF(__pyx_t_5); __pyx_t_5 = NULL;
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 122; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dc_double(__pyx_t_1);
-  if (unlikely(!__pyx_t_7.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__pyx_t_7.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 122; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_axis = __pyx_t_7;
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "bravais/assign_major_axes/assign_major_axes.pyx":124
- *         # double *major_axes_ptr = &major_axes[0,]
+  /* "bravais/assign_major_axes/assign_major_axes.pyx":123
+ *         double[:, ::1] major_axes = np.empty((num_elems, dofs_per_node))
  *         double[::1] axis = np.empty(dofs_per_node)
  *         double[::1] delta = np.empty(dofs_per_node)             # <<<<<<<<<<<<<<
  *         double *delta_ptr = &delta[0]
  *         double *axis_ptr = &axis[0]
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyInt_From_long(__pyx_v_dofs_per_node); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_From_long(__pyx_v_dofs_per_node); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -2501,29 +2501,29 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __Pyx_GIVEREF(__pyx_t_3); __pyx_t_3 = NULL;
     PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_2);
     __Pyx_GIVEREF(__pyx_t_2);
     __pyx_t_2 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dc_double(__pyx_t_1);
-  if (unlikely(!__pyx_t_7.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__pyx_t_7.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_delta = __pyx_t_7;
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "bravais/assign_major_axes/assign_major_axes.pyx":125
+  /* "bravais/assign_major_axes/assign_major_axes.pyx":124
  *         double[::1] axis = np.empty(dofs_per_node)
  *         double[::1] delta = np.empty(dofs_per_node)
  *         double *delta_ptr = &delta[0]             # <<<<<<<<<<<<<<
@@ -2533,7 +2533,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
   __pyx_t_8 = 0;
   __pyx_v_delta_ptr = (&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_delta.data) + __pyx_t_8)) ))));
 
-  /* "bravais/assign_major_axes/assign_major_axes.pyx":126
+  /* "bravais/assign_major_axes/assign_major_axes.pyx":125
  *         double[::1] delta = np.empty(dofs_per_node)
  *         double *delta_ptr = &delta[0]
  *         double *axis_ptr = &axis[0]             # <<<<<<<<<<<<<<
@@ -2543,7 +2543,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
   __pyx_t_9 = 0;
   __pyx_v_axis_ptr = (&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_axis.data) + __pyx_t_9)) ))));
 
-  /* "bravais/assign_major_axes/assign_major_axes.pyx":130
+  /* "bravais/assign_major_axes/assign_major_axes.pyx":129
  *         double *pt2
  * 
  *     for i in xrange(num_elems):             # <<<<<<<<<<<<<<
@@ -2554,7 +2554,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_i = __pyx_t_11;
 
-    /* "bravais/assign_major_axes/assign_major_axes.pyx":131
+    /* "bravais/assign_major_axes/assign_major_axes.pyx":130
  * 
  *     for i in xrange(num_elems):
  *         pt1 = &nodes[elems[i, 0], 0]             # <<<<<<<<<<<<<<
@@ -2567,7 +2567,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
     __pyx_t_15 = 0;
     __pyx_v_pt1 = (&(*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_nodes.data + __pyx_t_14 * __pyx_v_nodes.strides[0]) )) + __pyx_t_15)) ))));
 
-    /* "bravais/assign_major_axes/assign_major_axes.pyx":132
+    /* "bravais/assign_major_axes/assign_major_axes.pyx":131
  *     for i in xrange(num_elems):
  *         pt1 = &nodes[elems[i, 0], 0]
  *         pt2 = &nodes[elems[i, 1], 0]             # <<<<<<<<<<<<<<
@@ -2580,7 +2580,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
     __pyx_t_19 = 0;
     __pyx_v_pt2 = (&(*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_nodes.data + __pyx_t_18 * __pyx_v_nodes.strides[0]) )) + __pyx_t_19)) ))));
 
-    /* "bravais/assign_major_axes/assign_major_axes.pyx":133
+    /* "bravais/assign_major_axes/assign_major_axes.pyx":132
  *         pt1 = &nodes[elems[i, 0], 0]
  *         pt2 = &nodes[elems[i, 1], 0]
  *         for j in xrange(dofs_per_node):             # <<<<<<<<<<<<<<
@@ -2591,7 +2591,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
     for (__pyx_t_21 = 0; __pyx_t_21 < __pyx_t_20; __pyx_t_21+=1) {
       __pyx_v_j = __pyx_t_21;
 
-      /* "bravais/assign_major_axes/assign_major_axes.pyx":134
+      /* "bravais/assign_major_axes/assign_major_axes.pyx":133
  *         pt2 = &nodes[elems[i, 1], 0]
  *         for j in xrange(dofs_per_node):
  *             delta[j] = pt2[j] - pt1[j]             # <<<<<<<<<<<<<<
@@ -2602,7 +2602,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
       *((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_delta.data) + __pyx_t_22)) )) = ((__pyx_v_pt2[__pyx_v_j]) - (__pyx_v_pt1[__pyx_v_j]));
     }
 
-    /* "bravais/assign_major_axes/assign_major_axes.pyx":135
+    /* "bravais/assign_major_axes/assign_major_axes.pyx":134
  *         for j in xrange(dofs_per_node):
  *             delta[j] = pt2[j] - pt1[j]
  *         get_major_axis(delta_ptr, xrot, axis_ptr)             # <<<<<<<<<<<<<<
@@ -2611,7 +2611,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
  */
     __pyx_f_7bravais_17assign_major_axes_17assign_major_axes_get_major_axis(__pyx_v_delta_ptr, __pyx_v_xrot, __pyx_v_axis_ptr);
 
-    /* "bravais/assign_major_axes/assign_major_axes.pyx":136
+    /* "bravais/assign_major_axes/assign_major_axes.pyx":135
  *             delta[j] = pt2[j] - pt1[j]
  *         get_major_axis(delta_ptr, xrot, axis_ptr)
  *         for j in xrange(dofs_per_node):             # <<<<<<<<<<<<<<
@@ -2622,7 +2622,7 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
     for (__pyx_t_21 = 0; __pyx_t_21 < __pyx_t_20; __pyx_t_21+=1) {
       __pyx_v_j = __pyx_t_21;
 
-      /* "bravais/assign_major_axes/assign_major_axes.pyx":137
+      /* "bravais/assign_major_axes/assign_major_axes.pyx":136
  *         get_major_axis(delta_ptr, xrot, axis_ptr)
  *         for j in xrange(dofs_per_node):
  *             major_axes[i, j] = axis[j]             # <<<<<<<<<<<<<<
@@ -2636,13 +2636,13 @@ static PyObject *__pyx_pf_7bravais_17assign_major_axes_17assign_major_axes_assig
     }
   }
 
-  /* "bravais/assign_major_axes/assign_major_axes.pyx":139
+  /* "bravais/assign_major_axes/assign_major_axes.pyx":138
  *             major_axes[i, j] = axis[j]
  * 
  *     return major_axes             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_major_axes, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 139; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_major_axes, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 138; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16082,9 +16082,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 static int __Pyx_InitCachedBuiltins(void) {
   #if PY_MAJOR_VERSION >= 3
-  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 130; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #else
-  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_xrange); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 130; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_xrange); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 218; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 231; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
