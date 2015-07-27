@@ -80,17 +80,17 @@ def analyze():
 
         plot_data(percents, E, unit_cell_names, xlabel="Percent SC, %", 
                   markers=[u'o', u''], linestyles=['-', '-.'], colors=unit_colors[data.label],
-                  ylabel="Young's Modulus, $E_{1}/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35],
+                  ylabel="Young's modulus, $E_{1}/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35],
                   showfig=False, savefig=True, filename=data.label+'_youngs.svg')
 
         plot_data(percents, nu, unit_cell_names, xlabel="Percent SC, %",
                   markers=[u'o', u''], linestyles=['-', '-.'], colors=unit_colors[data.label],
-                  ylabel="Poission ratio, $\\nu_{12}$", xlim=[0, 1], ylim=[-0.01, 0.51],
+                  ylabel="Poisson ratio, $\\nu_{12}$", xlim=[0, 1], ylim=[-0.01, 0.51],
                   showfig=False, savefig=True, filename=data.label+'_poisson.svg')
 
         plot_data(percents, G, unit_cell_names, xlabel="Percent SC, %",
                   markers=[u'o', u''], linestyles=['-', '-.'], colors=unit_colors[data.label],
-                  ylabel="Shear Modulus, $G_{12}/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35],
+                  ylabel="Shear modulus, $G_{12}/\\rho E_{o}$", xlim=[0, 1], ylim=[-0.01, 0.35],
                   showfig=False, savefig=True, filename=data.label+'_shear.svg')
 
         plot_data(percents, K, unit_cell_names, xlabel="Percent SC, %", 
