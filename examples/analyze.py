@@ -7,7 +7,7 @@ import copy
 sys.path.append('../')
 from bravais.unit_cells import SimpleCubic, FCC, BCC, UnitData
 from bravais.mesher import mesh_bravais
-from bravais.post_process import process_data, plot_data, COLORS
+from bravais.post_process import process_data, plot_data, COLORS, sort_and_import_data
 from bravais.python_utils import add_tie_line
 from bravais.stiffness import plot_stiffness_surface, Props
 
@@ -62,7 +62,8 @@ def analyze():
                     pass
 
             print "Processing %s %s..." % (data.label, percent_str)
-            E_i, v_i, G_i, K_i = process_data(job, txt_files, path_to_files=current_dir)
+            force_data, displacement_data = sort_and_import_data(txt_files, current_dir)
+            E_i, v_i, G_i, K_i = process_data(job, force_data, displacement_data)
             E[i] = E_i / (relative_density * E_o)
             nu[i] = v_i
             G[i] = G_i / (relative_density * E_o)

@@ -1,6 +1,6 @@
 __author__ = 'ryan'
 
-__all__ = ["categorize_files", "NodalData", "process_data", "plot_data", 
+__all__ = ["categorize_files", "NodalData", "process_data", "plot_data", "sort_and_import_data",
            "plot_bravais", "plot_indices", "COLORS", "plot_single_normals"]
 
 import numpy as np
@@ -118,21 +118,17 @@ def calc_average_displacements(nodes, index, displacements, data_direction):
     return delta_disp[data_direction]
 
 
-def process_data(job, files, path_to_files):
+def sort_and_import_data(files, path_to_files):
     """
-    Process the FEA output and returns the non-normalized Young's modulus, Poisson ratio,
-    shear modulus, and bulk modulus. The shear modulus and bulk modulus are only calculated
-    if displacement and force data are included for those types of loadings.
-    :param job: `BravaisJob`. The job analyzed via FEA that the `files` correspond to.
+    Sorts the files into force and displacement data for axial, bulk and shear loading.
+    The files are then imported and stored in `NodalData` objects.
     :param files: `List`, dtype=`String`. List of files that contain the nodal force and displacement data
                    (Ex. `['axial_displacements.txt', 'axial_forces.txt']`). The displacement data must have
                    "displacements" in the file name, and the force data must have the word "forces" in its
                    file name. The load type ('axial', 'shear', or 'bulk') must also be in the file name
                    corresponding to the loading the data belongs to.
     :param path_to_files: `String`. Path to the specified `files`.
-    :return: Non-normalized elastic constants in the form
-    `(youngs_modulus, poisson_ratio, shear_modulus, bulk_modulus)`. Note that the shear and bulk moduli will only
-    contain useful data if bulk and shear data are available in the files that are input.
+    :return: (Forces, Displacements). `NodalData` objects containing the force and displacement data.
     """
     # split files into displacement or force categories
     displacement_files, force_files = categorize_files(files, ('displacements', 'forces'))
@@ -140,6 +136,23 @@ def process_data(job, files, path_to_files):
     # load force and displacement data using correct file names
     displacement_data = NodalData(displacement_files, path_to_files)
     force_data = NodalData(force_files, path_to_files)
+
+    return force_data, displacement_data
+
+
+def process_data(job, force_data, displacement_data):
+    """
+    Process the FEA output and returns the non-normalized Young's modulus, Poisson ratio,
+    shear modulus, and bulk modulus. The shear modulus and bulk modulus are only calculated
+    if displacement and force data are included for those types of loadings.
+    :param job               : `BravaisJob`. The job analyzed via FEA that the `files` correspond to.
+    :param force_data        : `NodalData`. Contains the nodal forces for axial, bulk and shear loading.
+    :param displacement_data : `NodalData`. Contains the nodal displacements for axial, bulk and shear loading.
+    :return                  : Non-normalized elastic constants in the form
+                               `(youngs_modulus, poisson_ratio, shear_modulus, bulk_modulus)`.
+                               Note, that the shear and bulk moduli will only contain useful data if bulk and shear data
+                               are available in the displacement and force objects that are input.
+    """
 
     # find the lengths along each direction of the job's nodes
     dimensionality = len(displacement_data.axial[0])
