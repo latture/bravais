@@ -45,87 +45,6 @@ class NodalData(object):
                 self.bulk = np.loadtxt(path_to_files + f)
 
 
-def plot_data(x, y, labels, xlabel=None, ylabel=None, xlim=None, ylim=None, xticks=None, yticks=None, colors=None,
-              linestyles=None, markers=None, add_legend=False, savefig=False, showfig=True, filename="test.png"):
-    """
-    Plots the rows of `y` with respect to the vector `x`.
-    :param x          : `array_like`. x-axis values.
-    :param y          : Matrix. Each row of `y` will constitute a line plotted with respect to `x`. The number of entries in x
-                        must match the number of columns of `y`.
-    :param labels     : `array_like`, dtype=`String`. Labels for each line. every row in `y` must have a corresponding label.
-    :param xlabel     : `String`. Label for x-axis.
-    :param ylabel     : `String`. Label for y-axis.
-    :param xlim       : `array_like`, `len(xlim)==2`. Upper and lower limits for the x-axis.
-    :param ylim       : `array_like`, `len(ylim)==2`. Upper and lower limits for the y-axis.
-    :param xticks     : `array_like`. List of ticks to use on the x-axis. Should be within the upper and lower bounds of the x-axis.
-    :param yticks     : `array_like`. List of ticks to use on the y-axis. Should be within the upper and lower bounds of the y-axis.
-    :param colors     : `array_like`. List of colors to plot each row in `y`.
-                         Colors will be cycled if fewer colors are specified than the number of rows in `y`.
-    :param linestyles : `array_like`. List Matplotlib designations for the linestyle for each row in `y`.
-                         Linestyles will be cycled if fewer linestyles are specified than the number of rows in `y`.
-    :param markers    : `array_like`. List Matplotlib designations for the colors for each row in `y`.
-                         Markers will be cycled if fewer markers are specified than the number of rows in `y`.
-    :param add_legend : `Bool`, default=`False`. If `True` a legend will be added to the plot.
-    :param savefig    : `Bool`, default=`False`. Whether to save the figure.
-    :param showfig    : `Bool`, default=`True`. Whether to show the figure.
-    :param filename   : `String`, default=`test.png`. Name of file to save the figure to if `savefig=True`.
-    """
-    assert y.shape[0] == len(labels), "Length of labels does not match the number of rows in y."
-
-    if colors is not None:
-        colors = itertools.cycle(colors)
-    else:
-        colors = itertools.cycle((COLORS["blue"],
-                                  COLORS["green"],
-                                  COLORS["red"],
-                                  COLORS["orange"],
-                                  COLORS["purple"],
-                                  COLORS["grey"],
-                                  COLORS["cyan"],
-                                  COLORS["teal"],
-                                  COLORS["lime"],
-                                  COLORS["brown"]))
-
-    if linestyles is not None:
-        linestyles = itertools.cycle(linestyles)
-    else:
-        linestyles = itertools.cycle(('-',))
-
-    if markers is not None:
-        markers = itertools.cycle(markers)
-    else:
-        markers = itertools.cycle((u's', u'>', u'o', u'D', u'p',u'H', u'^', u'v', u'd'))
-
-    fig = plt.figure(figsize=(8, 6), dpi=150)
-    axis = fig.add_subplot(111)
-
-    for i in xrange(y.shape[0]):
-        axis.plot(x, y[i, :], label=labels[i], linewidth=2, marker=markers.next(), color=colors.next(), linestyle=linestyles.next())
-
-    plt.rcParams.update({'font.size': 22})
-
-    # update plot labels and format based on user input 
-    if xlabel is not None:
-        axis.set_xlabel(xlabel)
-    if ylabel is not None:
-        axis.set_ylabel(ylabel)
-    if xlim is not None:
-        axis.set_xlim(xlim)
-    if ylim is not None:
-        axis.set_ylim(ylim)
-    if xticks is not None:
-        axis.set_xticks(xticks)
-    if yticks is not None:
-        axis.set_yticks(yticks)
-    if add_legend:
-        plt.legend(prop={'size': 12}, loc="upper right")
-    if savefig:
-        plt.savefig(filename, dpi=150, transparent=True, bbox_inches='tight')
-    if showfig:
-        plt.show()
-    plt.close('all')
-
-
 def categorize_files(filenames, keys):
     """
     Splits the file names up based on whether the file name contains a keyword.
@@ -286,6 +205,87 @@ def process_data(job, files, path_to_files):
     return youngs_modulus, poisson_ratio, shear_modulus, bulk_modulus
 
 
+def plot_data(x, y, labels, xlabel=None, ylabel=None, xlim=None, ylim=None, xticks=None, yticks=None, colors=None,
+              linestyles=None, markers=None, add_legend=False, savefig=False, showfig=True, filename="test.png"):
+    """
+    Plots the rows of `y` with respect to the vector `x`.
+    :param x          : `array_like`. x-axis values.
+    :param y          : Matrix. Each row of `y` will constitute a line plotted with respect to `x`. The number of entries in x
+                        must match the number of columns of `y`.
+    :param labels     : `array_like`, dtype=`String`. Labels for each line. every row in `y` must have a corresponding label.
+    :param xlabel     : `String`. Label for x-axis.
+    :param ylabel     : `String`. Label for y-axis.
+    :param xlim       : `array_like`, `len(xlim)==2`. Upper and lower limits for the x-axis.
+    :param ylim       : `array_like`, `len(ylim)==2`. Upper and lower limits for the y-axis.
+    :param xticks     : `array_like`. List of ticks to use on the x-axis. Should be within the upper and lower bounds of the x-axis.
+    :param yticks     : `array_like`. List of ticks to use on the y-axis. Should be within the upper and lower bounds of the y-axis.
+    :param colors     : `array_like`. List of colors to plot each row in `y`.
+                         Colors will be cycled if fewer colors are specified than the number of rows in `y`.
+    :param linestyles : `array_like`. List Matplotlib designations for the linestyle for each row in `y`.
+                         Linestyles will be cycled if fewer linestyles are specified than the number of rows in `y`.
+    :param markers    : `array_like`. List Matplotlib designations for the colors for each row in `y`.
+                         Markers will be cycled if fewer markers are specified than the number of rows in `y`.
+    :param add_legend : `Bool`, default=`False`. If `True` a legend will be added to the plot.
+    :param savefig    : `Bool`, default=`False`. Whether to save the figure.
+    :param showfig    : `Bool`, default=`True`. Whether to show the figure.
+    :param filename   : `String`, default=`test.png`. Name of file to save the figure to if `savefig=True`.
+    """
+    assert y.shape[0] == len(labels), "Length of labels does not match the number of rows in y."
+
+    if colors is not None:
+        colors = itertools.cycle(colors)
+    else:
+        colors = itertools.cycle((COLORS["blue"],
+                                  COLORS["green"],
+                                  COLORS["red"],
+                                  COLORS["orange"],
+                                  COLORS["purple"],
+                                  COLORS["grey"],
+                                  COLORS["cyan"],
+                                  COLORS["teal"],
+                                  COLORS["lime"],
+                                  COLORS["brown"]))
+
+    if linestyles is not None:
+        linestyles = itertools.cycle(linestyles)
+    else:
+        linestyles = itertools.cycle(('-',))
+
+    if markers is not None:
+        markers = itertools.cycle(markers)
+    else:
+        markers = itertools.cycle((u's', u'>', u'o', u'D', u'p',u'H', u'^', u'v', u'd'))
+
+    fig = plt.figure(figsize=(8, 6), dpi=150)
+    axis = fig.add_subplot(111)
+
+    for i in xrange(y.shape[0]):
+        axis.plot(x, y[i, :], label=labels[i], linewidth=2, marker=markers.next(), color=colors.next(), linestyle=linestyles.next())
+
+    plt.rcParams.update({'font.size': 22})
+
+    # update plot labels and format based on user input
+    if xlabel is not None:
+        axis.set_xlabel(xlabel)
+    if ylabel is not None:
+        axis.set_ylabel(ylabel)
+    if xlim is not None:
+        axis.set_xlim(xlim)
+    if ylim is not None:
+        axis.set_ylim(ylim)
+    if xticks is not None:
+        axis.set_xticks(xticks)
+    if yticks is not None:
+        axis.set_yticks(yticks)
+    if add_legend:
+        plt.legend(prop={'size': 12}, loc="upper right")
+    if savefig:
+        plt.savefig(filename, dpi=150, transparent=True, bbox_inches='tight')
+    if showfig:
+        plt.show()
+    plt.close('all')
+
+
 def plot_bravais(unit_cell, dimX=1, dimY=1, dimZ=1, color='#000000', showaxes=False,
                  showfig=True, savefig=False, filename="test.svg"):
     """
@@ -349,8 +349,8 @@ def plot_single_normals(unit_cell, rotation=0.0, showaxes=False, showfig=False, 
     Plots a single unit cell along with the major axis for each element.
 
     :param unit_cell: `BravaisLattice`. Contains `nodes` and `elems` member variables to plot.
-    :param rotation: `Float`. The amount the major axis is rotated clockwise relative to the z-axis of the element if it were
-     aligned along the x-axis and you were looking down the element from the end point to the first point.
+    :param rotation: `Float`. The amount the major axis is rotated clockwise relative to the z-axis of the element if it
+    were aligned along the x-axis and you were looking down the element from the end point to the first point.
     :param showfig: `Bool`. Whether to display the figure.
     :param savefig: `Bool`. Whether to save the figure.
     :param filename: `String`, Default="test.png". Name of saved file.
