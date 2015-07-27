@@ -30,7 +30,7 @@ std::vector< std::vector < double > > delete_duplicates_dbl(std::vector< std::ve
 	    {
 	        for (unsigned int j = 0; j < num_rows; ++j)
 	        {
-	            input[i][j] = std::round(input[i][j] * 1.0e10)/1.0e10;
+	            input[i][j] = std::round(input[i][j] * 1.0e7)/1.0e7;
 	        }
 	    }
     }
@@ -44,7 +44,7 @@ std::vector< std::vector < double > > delete_duplicates_dbl(std::vector< std::ve
 		    {
 		        for (j = 0; j < num_rows; ++j)
 		        {
-		            input[i][j] = std::round(input[i][j] * 1.0e10)/1.0e10;
+		            input[i][j] = std::round(input[i][j] * 1.0e7)/1.0e7;
 		        }
 		    }
     }
@@ -61,7 +61,7 @@ std::vector< std::vector < double > > delete_duplicates_dbl(std::vector< std::ve
 std::vector< int > test_rows(const std::vector< double > &row, const std::vector< std::vector< double > > &vec2d) {
 
     bool isEqual;
-    const double tolerance = 1e-10;
+    const double tolerance = 1e-7;
 
     std::vector< int > output;
 
@@ -134,7 +134,7 @@ std::vector< std::vector< int > > replace_with_idx(std::vector< std::vector< dou
 	        {
 	            for (unsigned int k = 0; k < dims; ++k)
 	            {
-	            	elemCoords[i][j][k] = std::round(elemCoords[i][j][k] * 1.0e10)/1.0e10;
+	            	elemCoords[i][j][k] = std::round(elemCoords[i][j][k] * 1.0e7)/1.0e7;
 	            }
 	        }
 	    }
@@ -149,7 +149,7 @@ std::vector< std::vector< int > > replace_with_idx(std::vector< std::vector< dou
 	        {
 	            for (k = 0; k < dims; ++k)
 	            {
-	            	elemCoords[i][j][k] = std::round(elemCoords[i][j][k] * 1.0e10)/1.0e10;
+	            	elemCoords[i][j][k] = std::round(elemCoords[i][j][k] * 1.0e7)/1.0e7;
 	            }
 	        }
 	    }
@@ -162,7 +162,7 @@ std::vector< std::vector< int > > replace_with_idx(std::vector< std::vector< dou
 	    {
 	        for (unsigned int j = 0; j < dims; ++j)
 	        {
-            	nodes[i][j] = std::round(nodes[i][j] * 1.0e10)/1.0e10;
+            	nodes[i][j] = std::round(nodes[i][j] * 1.0e7)/1.0e7;
 	        }
 	    }
     }
@@ -174,7 +174,7 @@ std::vector< std::vector< int > > replace_with_idx(std::vector< std::vector< dou
 	    {
 	        for (j = 0; j < dims; ++j)
 	        {
-            	nodes[i][j] = std::round(nodes[i][j] * 1.0e10)/1.0e10;
+            	nodes[i][j] = std::round(nodes[i][j] * 1.0e7)/1.0e7;
 	        }
 	    }
     }
