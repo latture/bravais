@@ -122,13 +122,13 @@ def add_tie_line(x, y):
     return np.vstack([y, y_tie_line])
 
 
-def calc_axial_strain(displacements, job):
+def calc_axial_strain(job, displacements):
     """
     Returns the axial strain in each strut in the `job`. The `ith` entry in
     the returned array corresponds to the axial strain in the `ith` element
     of the `job`.
-    :param displacements : `array_like`. Nodal displacements to apply to the job.
     :param job           : `Job`. Object that contains the element and node list.
+    :param displacements : `array_like`. Nodal displacements to apply to the job.
     :return              :  Numpy array, dtype=`float`. Elemental axial strains.
     """
     num_elems = job.elems.shape[0]
@@ -146,7 +146,7 @@ def calc_axial_strain(displacements, job):
         # calculate the vector between the nodes
         dn = n2 - n1
 
-        # calcuate the original length of the element
+        # calculate the original length of the element
         length_orig = np.sqrt(dn.dot(dn))
 
         # move nodes by appropriate displacement
