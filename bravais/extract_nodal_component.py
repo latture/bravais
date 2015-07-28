@@ -27,9 +27,15 @@ def main(argv):
 
     field = odb.steps.values()[-1].frames[-1].fieldOutputs[options.odb_component]
     labels = field.componentLabels
-    data = np.empty((len(field.values), len(field.values[0].data)))
-    for i in xrange(len(field.values)):
-        data[i] = field.values[i].data
+    try:
+        data = np.empty((len(field.values), len(field.values[0].dataDouble)))
+        for i in xrange(len(field.values)):
+            data[i] = field.values[i].dataDouble
+    except OdbError:
+        print "WARNING: double precision data not available."
+        data = np.empty((len(field.values), len(field.values[0].data)))
+        for i in xrange(len(field.values)):
+            data[i] = field.values[i].data
 
     print "Saving component %s to %s." % (options.odb_component, options.output_filename)
     np.savetxt(options.output_filename, data, fmt='%.18f')
