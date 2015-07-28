@@ -13,7 +13,7 @@ def run_job(inp_file, abaqus_executable='C:/SIMULIA/Abaqus/Commands/abq6135', nu
     """
     shell_command = '%s interactive job=%s cpus=%d' % (abaqus_executable, inp_file, num_cpus)
     if double_precision:
-        shell_command += ' double'
+        shell_command += ' output_precision=full double'
     subprocess.call(shell_command, shell=True)
 
 
