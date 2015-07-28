@@ -358,28 +358,41 @@ def plot_indices(nodes):
     plt.show()
 
 
-def plot_histogram(data, bins=10, labels=None, ylim=(0, 1), xlim=None,
-                   yticks=None, xticks=None, xlabel=None, ylabel=None, add_legend=False,
-                   colors=None, savefig=False, showfig=True, filename='hist.png'):
+def plot_histogram(data, bins=10, labels=None, normalizations=None, ylim=(0, 1), xlim=None,
+                   yticks=None, xticks=None, ylabel=None, xlabel=None, add_legend=False,
+                   colors=None, alpha=1.0, savefig=False, showfig=True, filename='hist.png'):
     """
-    Plots a histogram of the input strains divided into the specified number of bins
-    :param data       : 2D Numpy array. Each row of `data` will constitute a set of plotted histogram data.
-    :param labels     : `array_like`, dtype=`String`. Labels for each line. every row in `data` must have a corresponding label.
-    :param xlabel     : `String`. Label for x-axis.
-    :param ylabel     : `String`. Label for y-axis.
-    :param xlim       : `array_like`, `len(xlim)==2`. Upper and lower limits for the x-axis.
-    :param ylim       : `array_like`, `len(ylim)==2`. Upper and lower limits for the y-axis.
-    :param xticks     : `array_like`. List of ticks to use on the x-axis. Should be within the upper and lower bounds of the x-axis.
-    :param yticks     : `array_like`. List of ticks to use on the y-axis. Should be within the upper and lower bounds of the y-axis.
-    :param colors     : `array_like`. List of colors to plot each row in `y`.
-                         Colors will be cycled if fewer colors are specified than the number of rows in `y`.
-    :param add_legend : `Bool`, default=`False`. If `True` a legend will be added to the plot.
-    :param savefig    : `Bool`, default=`False`. Whether to save the figure.
-    :param showfig    : `Bool`, default=`True`. Whether to show the figure.
-    :param filename   : `String`, default=`test.png`. Name of file to save the figure to if `savefig=True`.
+    Plots a histogram of the input strains divided into the specified number of bins.
+    :param data           : 2D Numpy array. Each row of `data` will constitute a set of plotted histogram data.
+    :param labels         : `array_like`, dtype=`String`. Labels for each line.
+                             Every row in `data` must have a corresponding label.
+    :param normalizations : `array_like`, dtype=`Float`. Normalizations to apply to each row in `data`. Every value
+                            in the row will be divided by this value. If `normalizations` is provided then the length
+                            must be the same as the number of rows in `data`
+    :param ylim           : `array_like`, `len(ylim)==2`. Upper and lower limits for the y-axis.
+    :param xlim           : `array_like`, `len(xlim)==2`. Upper and lower limits for the x-axis.
+    :param yticks         : `array_like`. List of ticks to use on the y-axis.
+                             Should be within the upper and lower bounds of the y-axis.
+    :param xticks         : `array_like`. List of ticks to use on the x-axis.
+                             Should be within the upper and lower bounds of the x-axis.
+    :param ylabel         : `String`. Label for y-axis.
+    :param xlabel         : `String`. Label for x-axis.
+    :param add_legend     : `Bool`, default=`False`. If `True` a legend will be added to the plot.
+    :param colors         : `array_like`. List of colors to plot each row in `y`.
+                             Colors will be cycled if fewer colors are specified than the number of rows in `y`.
+    :param alpha          : `Float`, default=1.0. Alpha channel setting for bar chart colors.
+    :param savefig        : `Bool`, default=`False`. Whether to save the figure.
+    :param showfig        : `Bool`, default=`True`. Whether to show the figure.
+    :param filename       : `String`, default=`test.png`. Name of file to save the figure to if `savefig=True`.
     """
-    assert data.shape[0] == len(labels), "Length of `labels` does not match the number of rows in `data`."
+    if labels is not None:
+        assert data.shape[0] == len(labels), "Length of `labels` does not match the number of rows in `data`."
+    else:
+        labels = [("data set %d" % (i+1)) for i in xrange(len(data))]
 
+    if normalizations is not None:
+        assert data.shape[0] == len(normalizations), \
+            "Length of `normalizations` does not match the number of rows in `data`."
     fig = plt.figure(figsize=(10, 6), dpi=150)
     axis = fig.add_subplot(111)
 
@@ -401,9 +414,10 @@ def plot_histogram(data, bins=10, labels=None, ylim=(0, 1), xlim=None,
         counts, bin_edges = np.histogram(data[i], bins=bins, density=True)
         counts /= np.sum(counts)
 
-        label = labels[i].lower()
+        if normalizations is not None:
+            counts /= normalizations[i]
 
-        axis.bar(bin_edges[:-1], counts, width=abs(bin_edges[1]-bin_edges[0]), label=labels[i], color=colors.next())
+        axis.bar(bin_edges[:-1], counts, width=abs(bin_edges[1]-bin_edges[0]), label=labels[i], color=colors.next(), alpha=alpha)
 
     plt.rcParams.update({'font.size': 22})
 
