@@ -23,10 +23,13 @@ def run():
 
     # run all .inp files in cwd through Abaqus
     for fbase in inp_files:
-        abaqus.run_job(fbase, abaqus_executable='/sw/mech_e/Commands/abq6134')
-        abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='/sw/mech_e/Commands/abq6134',
+        abaqus.run_job(fbase, abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus')
+
+        abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus',
+                  options=(('-o', fbase+'.odb'), ('-c', 'SE'), ('-f', fbase+'_strains.txt')))
+        abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus',
                           options=(('-o', fbase+'.odb'), ('-c', 'U'), ('-f', fbase+'_displacements.txt')))
-        abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='/sw/mech_e/Commands/abq6134',
+        abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus',
                           options=(('-o', fbase+'.odb'), ('-c', 'RF'), ('-f', fbase+'_forces.txt')))
         counter += 1
         cli_progress(counter, num_inp_files)
