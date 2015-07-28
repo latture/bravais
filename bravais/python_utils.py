@@ -195,6 +195,8 @@ def sort_struts(jobs):
                             If Compound mesh was not formed from merging 2 `BravaisJob` instances,
                             `jobs` will have a length equal to 1.
     :return: Sorted struts in the form `[[pop1_j1, pop2_j1,...], [pop1_j2, pop2_j2,...], ... [pop1_jN, pop2_jN,...]]`
+             where `pop1_j1` is the first population of struts for the first job and each population is a
+             Numpy array with dtype=`int`.
     """
     strut_populations = []
     for j in jobs:
