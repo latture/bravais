@@ -4,6 +4,7 @@ from odbAccess import *
 import optparse
 import sys
 import numpy as np
+import warnings
 
 
 def main(argv):
@@ -26,13 +27,12 @@ def main(argv):
     odb = openOdb(path=options.odb_filename)
 
     field = odb.steps.values()[-1].frames[-1].fieldOutputs[options.odb_component]
-    labels = field.componentLabels
     try:
         data = np.empty((len(field.values), len(field.values[0].dataDouble)))
         for i in xrange(len(field.values)):
             data[i] = field.values[i].dataDouble
     except OdbError:
-        print "WARNING: double precision data not available."
+        warnings.warn("Double precision data not available for component %s." % options.odb_component)
         data = np.empty((len(field.values), len(field.values[0].data)))
         for i in xrange(len(field.values)):
             data[i] = field.values[i].data
