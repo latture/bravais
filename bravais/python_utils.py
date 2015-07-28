@@ -1,7 +1,7 @@
 __author__ = 'ryan'
 
-__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius", 
-           "calc_radii", "add_tie_line", "calc_axial_strain"]
+__all__ = ["sort_rows", "calc_rel_density", "print_nodes", "calc_radius", "calc_radii",
+           "add_tie_line", "calc_axial_strain", "calc_direction_vectors", "sort_struts"]
 
 import numpy as np
 from cpp_utils import replace_with_idx
@@ -162,3 +162,55 @@ def calc_axial_strain(job, displacements):
         axial_strain[i] = (length_def - length_orig) / length_orig
 
     return axial_strain
+
+
+def calc_direction_vectors(job):
+    """
+    Calculates and returns the vectors between the beginning and ending nodes of each element in `job`.
+    :param job: `Job`. Contains the node and element list stored in `nodes` and `elems` member variables, respectively.
+    :return: Numpy array, dtype=`Float`. Direction vectors.
+    """
+    num_elems = job.elems.shape[0]
+    dir_vecs = np.empty((num_elems, job.nodes.shape[1]))
+
+    for i in xrange(num_elems):
+        # pull out node numbers from element
+        nn1 = job.elems[i, 0]
+        nn2 = job.elems[i, 1]
+
+        # get the nodes referenced by the element
+        n1 = job.nodes[nn1]
+        n2 = job.nodes[nn2]
+
+        # calculate the vector between the nodes
+        dir_vecs[i] = n2 - n1
+
+    return dir_vecs
+
+
+def sort_struts(jobs):
+    """
+    Sorts strut populations for the job(s) specified by the angle between the element and the global x-directin.
+    :param jobs          : `array_like`. List of constituent job(s) for which `axial_strains` is defined.
+                            If Compound mesh was not formed from merging 2 `BravaisJob` instances,
+                            `jobs` will have a length equal to 1.
+    :return: Sorted struts in the form `[[pop1_j1, pop2_j1,...], [pop1_j2, pop2_j2,...], ... [pop1_jN, pop2_jN,...]]`
+    """
+    strut_populations = []
+    for j in jobs:
+        dir_vecs = calc_direction_vectors(j)
+
+        # calculate the absolute value of the dot product of
+        # the direction vectors with the global x-direction
+        dot_prods = np.round(np.abs(dir_vecs[:, 0]), decimals=5)
+        unique_dot_prods = np.unique(dot_prods)
+
+        # define strut populations based on groups of struts that
+        # have the same value from dot_prods
+        job_population = []
+        for unique_dot_prod in unique_dot_prods:
+            curr_population = np.where(dot_prods == unique_dot_prod)[0]
+            job_population.append(curr_population)
+        strut_populations.append(job_population)
+
+    return strut_populations
