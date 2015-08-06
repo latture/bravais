@@ -351,7 +351,7 @@ def create_inp(inp_description, jobs, radii, load_type, strain, csv_dir='csv_dat
     f.write('*NODE OUTPUT\n')
     f.write('U, RF\n')
     f.write('*ELEMENT OUTPUT\n')
-    f.write('SE\n')
+    f.write('SE, S, SF\n')
     f.write('*END STEP\n')
 
     # close file

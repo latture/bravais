@@ -3,7 +3,7 @@ __author__ = 'Ryan'
 __all__ = ["SimpleCubic", "FCC", "BCC", "Hexagonal", "Rhombohedral", "PrimitiveTetragonal", "BodyCenteredTetragonal",
            "PrimitiveOrthorhombic", "BodyCenteredOrthorhombic", "BaseCenteredOrthorhombic", "FaceCenteredOrthorhombic",
            "PrimitiveMonoclinic", "BaseCenteredMonoclinic", "Triclinic", "Hexagonal_v2", "FC_Pts",
-           "Square", "Cross", "FCC_Primitive", "DiamondCubic", "Kagome", "UnitData"]
+           "Square", "Cross", "FCC_Primitive", "DiamondCubic", "Kagome", "UnitData", "Triangulated"]
 
 
 from cpp_utils import *
@@ -557,6 +557,42 @@ class PrimitiveTetragonal(BravaisLattice):
                                     [1.0, 1.0, 1.0]])
         self.basis_elems = np.array(
             [[0, 1], [0, 2], [0, 3], [1, 4], [1, 5], [2, 4], [2, 6], [3, 5], [3, 6], [4, 7], [5, 7], [6, 7]])
+        self.nodes = np.empty((self.basis_elems.shape[0], num_elems + 1, 3))
+        self.elems = np.empty((self.basis_elems.shape[0], num_elems, 2, 3))
+        self.create_basis_mesh()
+
+
+class Triangulated(BravaisLattice):
+    def __init__(self, a, b, c, num_elems=1):
+        BravaisLattice.__init__(self, a=a, b=b, c=c, num_elems=num_elems)
+        self.basis_nodes = np.array([[0.0, 0.0, 0.0],
+                                     [0.0, 0.0, 1.0],
+                                     [0.0, 0.5, 0.0],
+                                     [0.0, 1.0, 0.0],
+                                     [0.0, 1.0, 1.0],
+                                     [0.5, 0.0, 0.0],
+                                     [0.5, 0.0, 1.0],
+                                     [0.5, 0.5, 1.0],
+                                     [0.5, 1.0, 0.0],
+                                     [0.5, 1.0, 1.0],
+                                     [1.0, 0.0, 0.0],
+                                     [1.0, 0.0, 1.0],
+                                     [1.0, 0.5, 0.0],
+                                     [1.0, 1.0, 0.0],
+                                     [1.0, 1.0, 1.0]])
+
+        self.basis_elems = np.array(
+            [[0, 2],
+             [1, 2], [1, 4], [1, 5], [1, 7],
+             [2, 3], [2, 4], [2, 5], [2, 7], [2, 8],
+             [4, 7], [4, 8],
+             [5, 7], [5, 8], [5, 11], [5, 12],
+             [6, 7],
+             [7, 8], [7, 9], [7, 11], [7, 12], [7, 14],
+             [8, 12], [8, 14],
+             [10, 12],
+             [11, 12], [11, 14],
+             [12, 13], [12, 14]])
         self.nodes = np.empty((self.basis_elems.shape[0], num_elems + 1, 3))
         self.elems = np.empty((self.basis_elems.shape[0], num_elems, 2, 3))
         self.create_basis_mesh()

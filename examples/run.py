@@ -8,6 +8,7 @@ sys.path.append('../')
 from bravais import abaqus
 from bravais.cli_progress import cli_progress
 
+
 def run():
     inp_files = []
     for f in os.listdir(os.getcwd()):
@@ -26,17 +27,21 @@ def run():
         abaqus.run_job(fbase, abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus')
 
         abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus',
-                  options=(('-o', fbase+'.odb'), ('-c', 'SE'), ('-f', fbase+'_strains.txt')))
+                  options=(('-o', fbase+'.odb'), ('-c', 'SE'), ('-f', fbase+'_elemental_strains.txt')))
         abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus',
-                          options=(('-o', fbase+'.odb'), ('-c', 'U'), ('-f', fbase+'_displacements.txt')))
+                          options=(('-o', fbase+'.odb'), ('-c', 'U'), ('-f', fbase+'_nodal_displacements.txt')))
         abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus',
-                          options=(('-o', fbase+'.odb'), ('-c', 'RF'), ('-f', fbase+'_forces.txt')))
+                          options=(('-o', fbase+'.odb'), ('-c', 'RF'), ('-f', fbase+'_nodal_forces.txt')))
+        abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus',
+                          options=(('-o', fbase+'.odb'), ('-c', 'RM'), ('-f', fbase+'_nodal_moments.txt')))
+        abaqus.run_script('../bravais/extract_nodal_component.py', abaqus_executable='C:/SIMULIA/Abaqus/Commands/abaqus',
+                          options=(('-o', fbase+'.odb'), ('-c', 'SF'), ('-f', fbase+'_elem_forces.txt')))
         counter += 1
         cli_progress(counter, num_inp_files)
 
     # remove all unneeded files
     ext_to_keep = ['odb', 'txt', 'inp', 'py']
-    unit_labels = ['FCC-SC', 'BCC-SC']
+    unit_labels = ['FCC']
     for f in os.listdir(os.getcwd()):
         try:
             fbase, ext = f.split('.')
