@@ -15,7 +15,8 @@ Usage
 -----
 First compile the extension modules: Navigate to the ~/bravais/bravais directory and execute `python setup.py build_ext --inplace`. 
 This will compile the `cpp_utils` and `assign_major_axes` extension modules. 
-A module can be used by importing the required tools, i.e. `from bravais import unit_cells, mesher` if a mesh needs to be created. A simple example that creates an inp file on Linux then runs the FE calculation on Windows is provided in the examples folder.
+A module can be used by importing the required tools, i.e. `from bravais import unit_cells, mesher` if a mesh needs to be created. 
+Example scripts that create input files, run the FE calculations in Abaqus, and analyze the results are provided in the examples folder.
 
 Contributor(s)
 ------------
